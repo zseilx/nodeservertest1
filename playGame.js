@@ -41,7 +41,7 @@ function getDropGun(socket) {
 
 // 2018_02_22
 // 플레이어가 총을 쐈을 때
-function getShootGun(socket,io, roomStatus, roomList) {
+function getShootGun(socket,io, roomStatus) {
     socket.on('shootGun', function(data) {
         
         //인게임에서 유저 수 구하기 위한 변수
@@ -71,12 +71,12 @@ function getShootGun(socket,io, roomStatus, roomList) {
             console.log('게임 끝');   
         
             //방 유저수 구함
-            var userNum = roomList[room_test].length;
+            var userNum = roomStatus[room_test]['users'].length;
 
             for(var i=0 ; i < userNum ; i++){
                 
                 //방 유저 상태를 notReady로 바꿈
-                roomList[room_test][i][1] = 'notReady';
+                roomStatus[room_test]['users'][i][1] = 'notReady';
             }
             
             //게임상태 변경

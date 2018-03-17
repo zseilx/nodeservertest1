@@ -16,7 +16,7 @@ function exitServer(socket, userList) {
 }
 
 // 유저의 정상적인 종료 및, 예기치 못한 종료 시 처리
-function disconnected(socket, userList, roomList) {
+function disconnected(socket, userList, roomStatus) {
 	socket.on('disconnect', function() {
 		for(var key in userList){
 			if(userList[key] == socket.id){
@@ -24,13 +24,13 @@ function disconnected(socket, userList, roomList) {
                 //유저 닉네임
                 var nick = key;
 
-                var userCnt = roomList[room_test].length;
+                var userCnt = roomStatus[room_test]['users'].length;
 
                 //접속 종료된 유저 찾는 for문
                 for (var i = 0; i < userCnt; i++) {
-                    if(roomList[room_test][i][0] == nick){
+                    if(roomStatus[room_test]['users'][i][0] == nick){
                         //방 배열에서 종료된 유저 삭제
-                        roomList[room_test].splice(i,1);
+                        roomStatus[room_test]['users'].splice(i,1);
                     }
                 }
                 //유저 배열에서 유저 삭제

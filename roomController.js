@@ -6,24 +6,24 @@ const room_test = 'room1';
 
 // 2018_02_08
 // 유저가 방 생성 시
-function createRoom(socket, roomList) {
+function createRoom(socket, roomStatus) {
 	socket.on('createRoom', function(roomName, userId) {
 		socket.join(roomName);
 		
 		// 2018-02_12
 		// room 배열에 유저의 아이디를 집어넣는 부분이 필요
-		roomList[roomName] = new Array();
-		roomList[roomName][0] = new Array();
+		roomStatus[roomName]['users'] = new Array();
+		roomStatus[roomName]['users'][0] = new Array();
 
-		roomList[roomName][0][0] = userId;
-		roomList[roomName][0][1] = 'notReady';
+		roomStatus[roomName]['users'][0][0] = userId;
+		roomStatus[roomName]['users'][0][1] = 'notReady';
 	});
 }
 
 // 2018_02_05 
 // 유저별 room 젒속
 // 추후에 처리해야함. 현재는 테스트 상 임시로 room1 로 통일
-function joinRoom(socket, roomList) {
+function joinRoom(socket, roomStatus) {
 //	socket.on('joinRoom', function(roomName, userId) {
 	socket.on('joinRoom', function(userId) {
 		
@@ -42,17 +42,17 @@ function joinRoom(socket, roomList) {
 
 		// 테스트용 코드
 		// 방에 입장 시 새로운 방 생성  및 유저의 정보를 방 정보에 삽입
-		if(roomList[room_test] == null) 
-			roomList[room_test] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
+		if(roomStatus[room_test]['users'] == null) 
+			roomStatus[room_test]['users'] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
 
-		var userCnt = roomList[room_test].length;
+		var userCnt = roomStatus[room_test]['users'].length;
 		// console.log('joinRoom : userCnt = ' + userCnt);
 		
 		// 입장한 유저의 번호를 할당, 및 유저 정보 삽입
-		roomList[room_test][userCnt] = new Array();
+		roomStatus[room_test]['users'][userCnt] = new Array();
 
-		roomList[room_test][userCnt][0] = userId;
-		roomList[room_test][userCnt][1] = 'notReady';
+		roomStatus[room_test]['users'][userCnt][0] = userId;
+		roomStatus[room_test]['users'][userCnt][1] = 'notReady';
 
 		// 방에 입장 시 방 안에 존재하는 사람들에게 현재 입장한 유저의 아이디를 전송
 		socket.broadcast.to(room_test).emit('joinUser', userId);
@@ -60,7 +60,7 @@ function joinRoom(socket, roomList) {
 		// 방금 입장한 사람에게 방 안에 존재하는 사람들의 아이디를 보내줌
 		var roomUserList = new Array();
 		for (var i = 0; i < userCnt; i++) {
-			roomUserList[i] = roomList[room_test][i][0];
+			roomUserList[i] = roomStatus[room_test]['users'][i][0];
 		}
 
 		socket.emit('roomUser', roomUserList);
@@ -71,23 +71,23 @@ function joinRoom(socket, roomList) {
 
 // 2018_02_08
 // 방 퇴장 시
-function exitRoom(socket, roomList) {
+function exitRoom(socket, roomStatus) {
 	//실제 개발 시 유니티에서 room_name 받아와야함
 	socket.on('exitRoom', function(userId) {
 
-		var userCnt = roomList[room_test].length;
+		var userCnt = roomStatus[room_test]['users'].length;
 
 		for(var i=0 ; i < userCnt ; i++){
 			
-			if(roomList[room_test][i][0] == userId){
+			if(roomStatus[room_test]['users'][i][0] == userId){
 				
 //				delete roomList[room_test][i];
-				roomList[room_test].splice(i,1);
+				roomStatus[room_test]['users'].splice(i,1);
 
 				var roomUserList = new Array();
 				
 				for (var j = 0; j < userCnt-1; j++) {
-					roomUserList[j] = roomList[room_test][j][0];
+					roomUserList[j] = roomStatus[room_test]['users'][j][0];
 				}
 				var jsonObj = JSON.stringify(roomUserList);
 				socket.broadcast.to(room_test).emit('exitRoomUser', jsonObj);
@@ -106,25 +106,25 @@ function exitRoom(socket, roomList) {
 
 // 2018_02_19
 // 방 입장 후 로비에서의 유저가 레디 하는 것을 수신 및, 전체 유저의 레디 상황 체크, 게임 타이머
-function userReadyChk(socket, roomList, io) {
+function userReadyChk(socket, roomStatus, io) {
 
 	socket.on('checkReady', function(jsonObj) {
 		
 		// 레디 한 유저를 찾는 for문
-		for(var i=0; i<roomList[room_test].length; i++) {
+		for(var i=0; i<roomStatus[room_test]['users'].length; i++) {
 			// -- if 레디한 유저를 찾음
-			if(roomList[room_test][i][0] == jsonObj.nick) {
+			if(roomStatus[room_test]['users'][i][0] == jsonObj.nick) {
 				// 보낸 상태가 레디 일 경우
 				if(jsonObj.ready == 'True') {
 					// 해당 유저의 상태를 ready로 변환
-					roomList[room_test][i][1] = 'ready';
+					roomStatus[room_test]['users'][i][1] = 'ready';
 					// console.log('user is ready  userId = ' + jsonObj.nick);
 					// 방 내에 존재하는 사람들에게 레디 했다는 것을 전송
 					socket.broadcast.to(room_test).emit('ready', jsonObj.nick);
 
 					// console.log('allReadyChk 전의 상황');
 					// 방 안에 존재하는 모든 사람들이 레디를 했는지 체크
-					if( allReady(roomList) ) {
+					if( allReady(roomStatus) ) {
 						// console.log('allReadyChk 완료 : emit 신호가 날아가야함');
 						// 모두 레디 했다는 것을 나를 포함한 방안에 있는 모든 유저들에게
 					
@@ -133,7 +133,7 @@ function userReadyChk(socket, roomList, io) {
 					}
 				} else { // 아닐 경우
 					// 해당 유저의 상태를 notReady로 변환
-					roomList[room_test][i][1] = 'notReady';
+					roomStatus[room_test]['users'][i][1] = 'notReady';
 					// console.log('user cancel ready  userId = ' + jsonObj.nick);
 					// 방 내에 존재하는 사람들에게 레디를 풀었다는 것을 전송
 					socket.broadcast.to(room_test).emit('notReady', jsonObj.nick);
@@ -146,15 +146,15 @@ function userReadyChk(socket, roomList, io) {
 
 // 2018_02_19
 // userReadyChk 안에서 실행 되는 함수 ( 모든 유저들의 레디를 검사해서 start 신호를 던져줌)
-function allReady(roomList) {
+function allReady(roomStatus) {
 	var cnt = 0;
 
-	const userNum = roomList[room_test].length;
+	const userNum = roomStatus[room_test]['users'].length;
 
 	// console.log('allReady : userNum = ' + userNum);
 
 	for(var i=0; i<userNum; i++) {
-		if(roomList[room_test][i][1] == 'ready') {
+		if(roomStatus[room_test]['users'][i][1] == 'ready') {
 			cnt++;
 		}
 	}
@@ -171,20 +171,20 @@ function allReady(roomList) {
 
 // 2018_02_20
 //유저가 방 나가기를 눌렀을때 방퇴장 처리
-function exitRoom(socket, roomList){
+function exitRoom(socket, roomStatus){
 	//유저id받아옴
 	socket.on('exit', function(nick) {
 
-		var userCnt = roomList[room_test].length;
+		var userCnt = roomStatus[room_test]['users'].length;
 		var userId  = nick;
 
 		// console.log('exit userId = ' + userId);
 
 		for(var i=0 ; i < userCnt ; i++){
 			
-			if(roomList[room_test][i][0] == userId){
+			if(roomStatus[room_test]['users'][i][0] == userId){
 				
-				roomList[room_test].splice(i,1);
+				roomStatus[room_test]['users'].splice(i,1);
 				
 				socket.broadcast.to(room_test).emit('exitUser', userId);
 
@@ -195,7 +195,7 @@ function exitRoom(socket, roomList){
 }
 
 //방 입장 또는 유저 입장 시 씬 연결을 위해 유저이름과 레디상태를 만들어줌
-function setIndex(socket, roomList){
+function setIndex(socket, roomStatus){
 	
 	socket.on('index', function(index){
 
