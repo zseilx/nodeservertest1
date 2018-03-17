@@ -205,4 +205,4 @@ function handReadyTime(handready,roomStatus) {
 
 exports.sendInit = sendInit;
 exports.handReady = handReady;
-exports.handNotReady = headNotReady;
+exports.handNotReady = handReadyTime;
