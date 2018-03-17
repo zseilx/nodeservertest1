@@ -24,19 +24,6 @@ const chair = 8;
 // userList['유저ID'] = socket.id;
 var userList = new Array();
 
-// 방들 정보 저장
-/*
-	형식은 roomList['방이름'][유저번호(int)][유저속성(int)];
-	1차원 (유사배열)	- 방이름 : 첫 방이름은 키값으로 스트링 형태의 데이터로 접근. 초기 방 생성시 배열에 생성
-	2차원 배열		 - 유저 번호로써 유저가 해당 방에 입장한 순서대로 유저의 번호가 지정된다 예 ) 방장은 0번을 부여받음
-	3차원 배열		 - 유저 속성으로는 현재 2가지가 존재함
-			0) 배열 원소 0번에는 유저의 ID를 저장함
-			1) 배열 원소 1번에는 유저의 현재 상태 (ready, notReady, start)를 저장
-	
-	유저 번호는 방에 접속한 순서대로 번호를 부여받으며 방에서 나갈 시 해당 방에서 유저의 정보는 사라진다.
-*/
-var roomList = new Array();
-
 /*
 	roomSetting['방이름']['설정명']['설정정보']
 	방의 설정 정보 및 오브젝트 상태들을 저장 해놓는 공간
@@ -60,15 +47,15 @@ io.sockets.on('connection', function (socket) {
 
 	// roomController
 	// 방 생성
-	roomController.createRoom(socket, roomList);
+	roomController.createRoom(socket, roomStatus);
 	// 방 입장
-	roomController.joinRoom(socket, roomList);
+	roomController.joinRoom(socket, roomStatus);
 	// 방 퇴장
-	roomController.exitRoom(socket, roomList);
+	roomController.exitRoom(socket, roomStatus);
 	// 유저 레디 시 ( 레디 체크 )
-	roomController.userReadyChk(socket, roomList);
+	roomController.userReadyChk(socket, roomStatus);
 	// 씬 전환 정보 전송
-	roomController.setIndex(socket, roomList, io);
+	roomController.setIndex(socket, roomStatus, io);
 
 	// serverController
 	// 유저의 서버 접속
@@ -76,7 +63,7 @@ io.sockets.on('connection', function (socket) {
 	// 유저가 서버에서 나갔을 때 ( 정상적인 게임 종료 )
 	serverController.exitServer(socket, userList);
 	// 강제 종료 및, 예외적인 서버와의 연결 끊김 처리
-	serverController.disconnected(socket, userList, roomList);
+	serverController.disconnected(socket, userList, roomStatus);
 
 	// playGame
 	// 유저 움직임 수신
@@ -88,15 +75,15 @@ io.sockets.on('connection', function (socket) {
 	// 유저가 총 버렸을 때
 	playGame.getDropGun(socket);
 	// 유저가 총을 쐈을 때
-	playGame.getShootGun(socket,io,roomStatus,roomList);
+	playGame.getShootGun(socket,io,roomStatus);
 
 	// initGameStart
 	// 맵에서의 각 플레이어들의 위치를 랜덤으로 생성하여 뿌려주는 역할
-	initGameStart.sendInit(socket, roomList, roomStatus, chair, io);
+	initGameStart.sendInit(socket, roomStatus, chair, io);
 	// 인게임에서 유저가 준비동작을 갖추었을 때
-	initGameStart.handReady(socket, roomList, roomStatus, io);
+	initGameStart.handReady(socket, roomStatus, io);
 	// 인게임에서 유저가 준비동작을 갖추다가 다른 동작을 취했을 때
-	initGameStart.handNotReady(socket, roomList, roomStatus, io);
+	initGameStart.handNotReady(socket, roomStatus, io);
 	// voiceTalk
 
 });

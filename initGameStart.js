@@ -6,7 +6,7 @@ const sideTime = 15; // 게임 양 끝의 대기 시간? (게임 시작 대기, 
 
 // 2018_02_15
 // 게임 시작 시 유저와 NPC의 자리를 랜덤 생성 후 전달
-function sendInit(socket, roomList, roomStatus, chair, io) {
+function sendInit(socket, roomStatus, chair, io) {
 	//socket.on('sendInit', function(roomName) {
 	socket.on('reqPosition', function() {
 		// console.log('reqPosition : socket get event');
@@ -23,12 +23,12 @@ function sendInit(socket, roomList, roomStatus, chair, io) {
 			if(roomStatus[room_test]['gameStatus'] = 'go'){
 			
 				//방에 접속해 있는 유저 수
-				var userCnt = roomList[room_test].length;
+				var userCnt = roomStatus[room_test]['users'].length;
 
 					for(var i=0 ; i < userCnt ; i++){
 						
 						//방 유저 상태를 notReady로 바꿈
-						roomList[room_test][i][1] = 'notReady';						
+						roomStatus[room_test]['users'][i][1] = 'notReady';						
 					}
 
 				console.log('게임 타임 끝');
@@ -38,10 +38,9 @@ function sendInit(socket, roomList, roomStatus, chair, io) {
 		}
 
 
-		//test_User(roomList);
 		if(roomStatus[room_test]['characterPosition'] == null) {
 			console.log('sendInit : if = ' + '방생성');
-			var playerNum = roomList[room_test].length;
+			var playerNum = roomStatus[room_test]['users'].length;
 
 			console.log("플레이어 수 : " + playerNum);
 
@@ -52,13 +51,13 @@ function sendInit(socket, roomList, roomStatus, chair, io) {
 
 			for(var i=0; i < chair; i++) {
 				if(i < playerNum) {
-					roomStatus[room_test]['characterPosition'][arr[i]] = roomList[room_test][i][0];
+					roomStatus[room_test]['characterPosition'][arr[i]] = roomStatus[room_test]['users'][i][0];
 				} else {
 					roomStatus[room_test]['characterPosition'][arr[i]] = 'NPC';
 				}
 			}
 			
-			var npcCnt = 8-roomList[room_test].length;//npc 수
+			var npcCnt = 8-roomStatus[room_test]['users'].length;//npc 수
 
 			var eventNpcOut = randomTimeNpcOut(npcCnt);
 		
@@ -88,7 +87,7 @@ function sendInit(socket, roomList, roomStatus, chair, io) {
 }
 
 // 인게임에서 유저가 준비동작을 갖추었을 때
-function handReady(socket, roomList, roomStatus, io) {
+function handReady(socket, roomStatus, io) {
 
 	roomStatus[room_test]['handReady'] = new Array();
 
@@ -98,7 +97,7 @@ function handReady(socket, roomList, roomStatus, io) {
 		//손 하나를 지정위치에 올려놓은 유저의 이름 받아옴
 		var userId = data;
 		//방에 있는 유저 수
-		var userNum = roomList[room_test].length;
+		var userNum = roomStatus[room_test]['users'].length;
 		//Ready한 사람의 수
 		var readyNum = 0;
 
@@ -197,7 +196,7 @@ function randomPositionNpc(npcPosition) {
 
     return random;
 }
-function handReadyTime(handready,roomStatus) {
+function handReadyTime(handready, roomStatus) {
 	roomStatus[room_test]['gameStatus']=='handReady';
 }
 
