@@ -2,6 +2,7 @@
 const room_test = 'room1';
 
 // 유저가 서버에 접속 시 유저 ID에 socket.io를 저장시켜놓음.
+// deeps level 1
 function joinServer(socket, userList) {
 	socket.on('joinServer', function() {
 		userList[userId] = socket.id;
@@ -9,6 +10,7 @@ function joinServer(socket, userList) {
 }
 
 // 유저의 정상적인 서버 종료 시 ? // 아직 구현 미완료
+// deeps level 1
 function exitServer(socket, userList) {
 	socket.on("exitServer",function(userId) {
 		delete userList[userId];
@@ -16,6 +18,7 @@ function exitServer(socket, userList) {
 }
 
 // 유저의 정상적인 종료 및, 예기치 못한 종료 시 처리
+// deeps level 1
 function disconnected(socket, userList, roomStatus) {
 	socket.on('disconnect', function() {
 		for(var key in userList){

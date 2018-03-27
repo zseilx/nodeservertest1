@@ -7,6 +7,7 @@ const sideTime = 15; // 게임 양 끝의 대기 시간? (게임 시작 대기, 
 
 // 2018_02_15
 // 게임 시작 시 유저와 NPC의 자리를 랜덤 생성 후 전달
+// deeps level 1
 function sendInit(socket, roomStatus, chair, io) {
 	//socket.on('sendInit', function(roomName) {
 	socket.on('reqPosition', function() {
@@ -46,6 +47,7 @@ function sendInit(socket, roomStatus, chair, io) {
 }
 
 // 인게임에서 유저가 준비동작을 갖추었을 때
+// deeps level 1
 function handReady(socket, roomStatus, io) {
 
 	socket.on('handReady', function(data) {
@@ -91,6 +93,9 @@ function handReady(socket, roomStatus, io) {
 	});
 }
 
+// 2018_03_24 
+// 핸드 레디를 풀었을 경우 수신하는 이벤트
+// deeps level 1
 function handNotReady(socket, roomStatus, io){
 	
 	socket.on('handNotReady', function(data) {
@@ -129,7 +134,9 @@ function handNotReady(socket, roomStatus, io){
 }
 
 
-
+// 2018_03_17
+// 한명의 npc가 실제로 퇴장하는 이벤트
+// deeps level 2
 function npcOut(roomStatus, npcNum, io){
 	console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + npcNum);
 
@@ -142,6 +149,7 @@ function npcOut(roomStatus, npcNum, io){
 
 // 2018_02_15
 // npc 및 player 위치 랜덤생성
+// deeps level 2
 function initPosition(playerNum, chair) {
 
 	var position = new Array(chair);
@@ -163,7 +171,8 @@ function initPosition(playerNum, chair) {
 };
 
 
-//npc가 퇴장하는 랜덤 시간 배열 return
+// npc가 퇴장하는 랜덤 시간 배열 return
+// deeps level 2
 function randomTimeNpcOut(npcCnt) {
     var averOutTime = (totalGameTime - sideTime * 2) / npcCnt;
 
@@ -177,6 +186,8 @@ function randomTimeNpcOut(npcCnt) {
    return outTimeArray;
 };
 
+// npc 랜덤 퇴장 자리 선정
+// deeps level 2
 function randomPositionNpc(npcPosition) {
 
     var temp = 0;
@@ -201,6 +212,8 @@ function randomPositionNpc(npcPosition) {
     return random;
 }
 
+// 플레이어 핸드레디 전부 확인 시 게임 시작 및 npc 자리 셋팅 등 실제 게임 시작
+// deeps level 2
 function handReadyTime(roomStatus, room_test, io) {
 	console.log('오케이 3초동안 준비 잘했어 진짜 게임 시작할께');
 	roomStatus[room_test]['gameStatus']=='handAllReady';
@@ -229,7 +242,8 @@ function handReadyTime(roomStatus, room_test, io) {
 
 }
 
-//게임 타이머 함수
+// 게임 타이머 함수
+// deeps level 3
 function gameTime(roomStatus, io){
 	console.log('좋아 게임시간 3분 셀께!!!!!');
 	

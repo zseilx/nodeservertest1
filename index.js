@@ -41,6 +41,7 @@ console.log('Server Started!');
 
 // 2018_01_28 
 // socket io 처리 부분
+// deeps level 0
 io.sockets.on('connection', function (socket) {
 
 	console.log('connected : ' + socket.id);

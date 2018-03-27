@@ -3,7 +3,7 @@ const room_test = 'room1';
 
 // 2018_02_05 
 // unity 클라이언트로부터 해당하는 모션 정보를 받았을 경우
-//function getMovement(socket) {
+// deeps level 1
 function getMovement(socket) {
 
     socket.on('now', function(jsonStr) {
@@ -16,6 +16,7 @@ function getMovement(socket) {
 
 // 2018_02_22
 // 플레이어가 총을 집었다는 정보를 수신 했을 경우
+// deeps level 1
 function getGun(socket) {
 	socket.on('getGun', function(data) {
         console.log('총 집음');
@@ -24,6 +25,7 @@ function getGun(socket) {
 };
 
 // 플레이더가 총을 숨겼을 때
+// deeps level 1
 function hidingGun(socket) {
 	socket.on('hidingGun', function(data) {
         console.log('총 숨김');
@@ -33,6 +35,7 @@ function hidingGun(socket) {
 
 // 2018_02_22
 // 플레이어가 다시 총을 드랍 했을 경우
+// deeps level 1
 function getDropGun(socket) {
 	socket.on('dropGun', function(jsonStr) {
     
@@ -41,6 +44,7 @@ function getDropGun(socket) {
 
 // 2018_02_22
 // 플레이어가 총을 쐈을 때
+// deeps level 1
 function getShootGun(socket,io, roomStatus) {
     socket.on('shootGun', function(data) {
         

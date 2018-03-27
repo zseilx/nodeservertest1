@@ -6,6 +6,7 @@ const room_test = 'room1';
 
 // 2018_02_08
 // 유저가 방 생성 시
+// deeps level 1
 function createRoom(socket, roomStatus) {
 	socket.on('createRoom', function(roomName, userId) {
 		socket.join(roomName);
@@ -23,6 +24,7 @@ function createRoom(socket, roomStatus) {
 // 2018_02_05 
 // 유저별 room 젒속
 // 추후에 처리해야함. 현재는 테스트 상 임시로 room1 로 통일
+// deeps level 1
 function joinRoom(socket, roomStatus) {
 //	socket.on('joinRoom', function(roomName, userId) {
 	socket.on('joinRoom', function(userId) {
@@ -69,43 +71,9 @@ function joinRoom(socket, roomStatus) {
 	});
 }
 
-// 2018_02_08
-// 방 퇴장 시
-function exitRoom(socket, roomStatus) {
-	//실제 개발 시 유니티에서 room_name 받아와야함
-	socket.on('exitRoom', function(userId) {
-
-		var userCnt = roomStatus[room_test]['users'].length;
-
-		for(var i=0 ; i < userCnt ; i++){
-			
-			if(roomStatus[room_test]['users'][i][0] == userId){
-				
-//				delete roomList[room_test][i];
-				roomStatus[room_test]['users'].splice(i,1);
-
-				var roomUserList = new Array();
-				
-				for (var j = 0; j < userCnt-1; j++) {
-					roomUserList[j] = roomStatus[room_test]['users'][j][0];
-				}
-				var jsonObj = JSON.stringify(roomUserList);
-				socket.broadcast.to(room_test).emit('exitRoomUser', jsonObj);
-
-				socket.emit('exitRoom');
-				
-				//18.02.20 게임방 퇴장 소켓 삭제 부분 제거
-				// socket.leave(room_test);
-				
-				break;
-			}	
-		}
-		
-	});
-}
-
 // 2018_02_19
 // 방 입장 후 로비에서의 유저가 레디 하는 것을 수신 및, 전체 유저의 레디 상황 체크, 게임 타이머
+// deeps level 1
 function userReadyChk(socket, roomStatus, io) {
 
 	socket.on('checkReady', function(jsonObj) {
@@ -146,6 +114,7 @@ function userReadyChk(socket, roomStatus, io) {
 
 // 2018_02_19
 // userReadyChk 안에서 실행 되는 함수 ( 모든 유저들의 레디를 검사해서 start 신호를 던져줌)
+// deeps level 2
 function allReady(roomStatus) {
 	var cnt = 0;
 
@@ -170,7 +139,8 @@ function allReady(roomStatus) {
 }
 
 // 2018_02_20
-//유저가 방 나가기를 눌렀을때 방퇴장 처리
+// 유저가 방 나가기를 눌렀을때 방퇴장 처리
+// deeps level 1
 function exitRoom(socket, roomStatus){
 	//유저id받아옴
 	socket.on('exit', function(nick) {
@@ -195,6 +165,7 @@ function exitRoom(socket, roomStatus){
 }
 
 //방 입장 또는 유저 입장 시 씬 연결을 위해 유저이름과 레디상태를 만들어줌
+// deeps level 1
 function setIndex(socket, roomStatus){
 	
 	socket.on('index', function(index){
@@ -205,7 +176,6 @@ function setIndex(socket, roomStatus){
 
 exports.createRoom = createRoom;
 exports.joinRoom = joinRoom;
-exports.exitRoom = exitRoom;
 exports.userReadyChk = userReadyChk;
 exports.exitRoom = exitRoom;
 exports.setIndex = setIndex;
