@@ -84,10 +84,9 @@ function handReady(socket, roomStatus, io) {
 
 		if(readyNum==userNum){
 			console.log('유저 모두 인게임 완료!!! 젠부사쓰!!!!!!!!!!!!!!!');
-
-			io.to(room_test).emit('handAllReady', 'handAllReady');
-		
+			console.log('타이머 3초!!!');
 			setTimeout(handReadyTime, 3000 , roomStatus, room_test, io);
+			io.to(room_test).emit('handAllReady', 'handAllReady');
 		}
 	});
 }
@@ -113,8 +112,10 @@ function handNotReady(socket, roomStatus, io){
 			//방 상태 go로 바꿈
 			roomStatus[room_test]['gameStatus']=='go';
 			//settimeout 정지
+			console.log('3초 세고 있는데 누가 손뺏다능!!!');
 			clearTimeout(handReadyTime);
 			
+
 			io.to(room_test).emit('handNotReady', 'handNotReady');
 
 		}else if(roomStatus[room_test]['gameStatus']=='go'){
@@ -201,6 +202,7 @@ function randomPositionNpc(npcPosition) {
 }
 
 function handReadyTime(roomStatus, room_test, io) {
+	console.log('오케이 3초동안 준비 잘했어 진짜 게임 시작할께');
 	roomStatus[room_test]['gameStatus']=='handAllReady';
 	io.to(room_test).emit('timeUp', 'timeUp');
 	
@@ -229,6 +231,7 @@ function handReadyTime(roomStatus, room_test, io) {
 
 //게임 타이머 함수
 function gameTime(roomStatus, io){
+	console.log('좋아 게임시간 3분 셀께!!!!!');
 	
 	//만약 게임이 진행되고 있다면
 	if(roomStatus[room_test]['gameStatus'] = 'handAllReady'){
