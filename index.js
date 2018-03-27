@@ -12,6 +12,7 @@ const playGame = require('./playGame');
 // 음성 대화 지원
 const voiceTalk = require('./voiceTalk');
 
+//git test용 코드
 
 
 // 방 생성 관련 테스트
