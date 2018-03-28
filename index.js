@@ -12,8 +12,6 @@ const playGame = require('./playGame');
 // 음성 대화 지원
 const voiceTalk = require('./voiceTalk');
 
-//git test용 코드
-
 
 // 방 생성 관련 테스트
 const room_test = 'room1';
@@ -47,44 +45,72 @@ io.sockets.on('connection', function (socket) {
 
 	console.log('connected : ' + socket.id);
 
-	// roomController
+	/**************************************** roomController ****************************************/
 	// 방 생성
+	// socket.on('createRoom', function(roomName, userId)
 	roomController.createRoom(socket, roomStatus);
+
 	// 방 입장
+	// socket.on('joinRoom', function(userId)
 	roomController.joinRoom(socket, roomStatus);
+
 	// 방 퇴장
+	// socket.on('exit', function(nick)
 	roomController.exitRoom(socket, roomStatus);
+
 	// 유저 레디 시 ( 레디 체크 )
+	// socket.on('checkReady', function(jsonObj)
 	roomController.userReadyChk(socket, roomStatus);
+
 	// 씬 전환 정보 전송
+	// socket.on('index', function(index)
 	roomController.setIndex(socket, roomStatus, io);
 
-	// serverController
+	/**************************************** serverController ****************************************/
 	// 유저의 서버 접속
+	// socket.on('joinServer', function()
 	serverController.joinServer(socket, userList);
+
 	// 유저가 서버에서 나갔을 때 ( 정상적인 게임 종료 )
+	// socket.on("exitServer",function(userId)
 	serverController.exitServer(socket, userList);
+
 	// 강제 종료 및, 예외적인 서버와의 연결 끊김 처리
+	// socket.on("exitServer",function(userId)
 	serverController.disconnected(socket, userList, roomStatus);
 
-	// playGame
+	/**************************************** playGame ****************************************/
 	// 유저 움직임 수신
+	// socket.on('now', function(jsonStr)
 	playGame.getMovement(socket);
+
 	// 유저가 총 집었을 때
+	// socket.on('now', function(jsonStr)
 	playGame.getGun(socket);
+
 	// 유저가 총을 숨겼을 때
+	// socket.on('hidingGun', function(data)
 	playGame.hidingGun(socket);
+
 	// 유저가 총 버렸을 때
+	// socket.on('hidingGun', function(data)
 	playGame.getDropGun(socket);
+
 	// 유저가 총을 쐈을 때
+	// socket.on('shootGun', function(data)
 	playGame.getShootGun(socket,io,roomStatus);
 
-	// initGameStart
+	/**************************************** initGameStart ****************************************/
 	// 맵에서의 각 플레이어들의 위치를 랜덤으로 생성하여 뿌려주는 역할
+	// socket.on('reqPosition', function()
 	initGameStart.sendInit(socket, roomStatus, chair, io);
+
 	// 인게임에서 유저가 준비동작을 갖추었을 때
+	// socket.on('handReady', function(data)
 	initGameStart.handReady(socket, roomStatus, io);
+
 	// 인게임에서 유저가 준비동작을 갖추다가 다른 동작을 취했을 때
+	// socket.on('handNotReady', function(data)
 	initGameStart.handNotReady(socket, roomStatus, io);
 	// voiceTalk
 

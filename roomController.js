@@ -164,7 +164,7 @@ function exitRoom(socket, roomStatus){
 	});
 }
 
-//방 입장 또는 유저 입장 시 씬 연결을 위해 유저이름과 레디상태를 만들어줌
+// 방 입장 또는 유저 입장 시 씬 연결을 위해 유저이름과 레디상태를 만들어줌
 // deeps level 1
 function setIndex(socket, roomStatus){
 	
