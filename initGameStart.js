@@ -136,13 +136,27 @@ function handNotReady(socket, roomStatus, io){
 
 // 2018_03_17
 // 한명의 npc가 실제로 퇴장하는 이벤트
-// deeps level 2
-function npcOut(roomStatus, npcNum, io){
+// deeps level 3
+// Recursive function 재귀 함수
+function npcOutSocket(roomStatus, io){
 	console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + npcNum);
 
 	roomStatus[room_test]['characterPosition'][npcNum] = 'empty';
 
 	io.to(room_test).emit('npcOut', npcNum);
+
+	var time = 0;
+
+
+
+	time = time * 1000;
+
+	// 재귀
+	if(true) {
+		setTimeout(function() {
+			npcOutSocket(roomStatus, io)
+		}, time);
+	}
 }
 
 
@@ -172,8 +186,8 @@ function initPosition(playerNum, chair) {
 
 
 // npc가 퇴장하는 랜덤 시간 배열 return
-// deeps level 2
-function randomTimeNpcOut(npcCnt) {
+// deeps level 3
+function randomTimeNpcOutArray(npcCnt) {
     var averOutTime = (totalGameTime - sideTime * 2) / npcCnt;
 
     var outTimeArray = new Array();
@@ -187,8 +201,8 @@ function randomTimeNpcOut(npcCnt) {
 };
 
 // npc 랜덤 퇴장 자리 선정
-// deeps level 2
-function randomPositionNpc(npcPosition) {
+// deeps level 3
+function randomPositionNpcArray(npcPosition) {
 
     var temp = 0;
     var arrayCnt = 0;
@@ -218,33 +232,19 @@ function handReadyTime(roomStatus, room_test, io) {
 	console.log('오케이 3초동안 준비 잘했어 진짜 게임 시작할께');
 	roomStatus[room_test]['gameStatus']=='handAllReady';
 	io.to(room_test).emit('timeUp', 'timeUp');
-	
+
 	//게임 타이머 설정
-	setTimeout(gameTime, 180000 , roomStatus, io);
+	setTimeout(gameTime, totalGameTime * 1000 , roomStatus, io);
 
-	var npcCnt = 8-roomStatus[room_test]['users'].length;//npc 수
-
-	var eventNpcOut = randomTimeNpcOut(npcCnt);
-
-	var npcPosition = randomPositionNpc(roomStatus[room_test]['characterPosition']);
-
-	var j=0;
-
-	//방 상태확인 추가
-	while(npcPosition.length > 0) {
-		setTimeout(npcOut, 
-			(eventNpcOut[j] + (eventNpcOut[npcCnt] * j) + sideTime) * 1000, 
-			roomStatus, npcPosition[0], io);
-
-		npcPosition.splice(0,1);
-		j++;
-	}
+	// Recursive function 재귀 함수
+	// npc 나가는 이벤트
+	npcOutSocket(roomStatus, io);
 
 }
 
 // 게임 타이머 함수
 // deeps level 3
-function gameTime(roomStatus, io){
+function gameTime(roomStatus, io) {
 	console.log('좋아 게임시간 3분 셀께!!!!!');
 	
 	//만약 게임이 진행되고 있다면
