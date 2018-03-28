@@ -3,7 +3,7 @@
  * 필요 없어졌지만 후에 다시 필요할 수도 있는 코드들 여기에 모아둘 것
  */
 
-
+// roomController.js
 // 2018_02_08
 // 방 퇴장 시
 // deeps level 1
@@ -38,4 +38,52 @@ function exitRoom(socket, roomStatus) {
 		}
 		
 	});
+}
+
+
+
+// initGameStart.js
+// npc가 퇴장하는 랜덤 시간 배열 return
+// deeps level 3
+function randomTimeNpcOutArray(npcCnt) {
+    var averOutTime = (totalGameTime - sideTime * 2) / npcCnt;
+
+    var outTimeArray = new Array();
+    for(var i=0; i<npcCnt; i++) {
+       var randomNum = Math.floor(Math.random() * 6); // 0~5의 값을 뽑아내기 위함 맞는지 체크 필요
+       outTimeArray[i] = averOutTime - randomNum;
+    }
+    outTimeArray[npcCnt] = averOutTime;
+
+   return outTimeArray;
+};
+
+
+
+// initGameStart.js
+// npc 랜덤 퇴장 자리 선정
+// deeps level 3
+// 2018_03_15
+function randomPositionNpcArray(npcPosition) {
+
+    var temp = 0;
+    var arrayCnt = 0;
+    var random = new Array();
+    
+    for(var i=0; i<npcPosition.length; i++) {
+        if(npcPosition[i] == 'NPC') {
+            random[arrayCnt] = i;
+            arrayCnt++;
+        }
+    }
+
+	for (var i = 0; i < random.length; i++) {
+        var num = Math.floor((Math.random() * random.length - i) + i);
+
+		temp = random[i];
+		random[i] = random[num];
+        random[num] = temp;
+    }
+
+    return random;
 }

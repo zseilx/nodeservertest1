@@ -2,7 +2,8 @@
 const room_test = 'room1';
 
 const totalGameTime = 180; // 게임 총 시간
-const sideTime = 15; // 게임 양 끝의 대기 시간? (게임 시작 대기, 게임 종료 전 진행을 위한 시간)
+const frontSideTime = 15; // 게임 시작 대기 시간
+const backSideTime = 15; // 게임 종료 전 진행을 위한 시간
 
 
 // 2018_02_15
@@ -139,23 +140,34 @@ function handNotReady(socket, roomStatus, io){
 // deeps level 3
 // Recursive function 재귀 함수
 function npcOutSocket(roomStatus, io){
-	console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + npcNum);
 
-	roomStatus[room_test]['characterPosition'][npcNum] = 'empty';
+	if(roomStatus[room_test]['gameStartTime'] == null) {
+		roomStatus[room_test]['gameStartTime'] = new Date().getTime();
+	} else {
 
-	io.to(room_test).emit('npcOut', npcNum);
+		console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + npcNum);
 
-	var time = 0;
+		
 
+		roomStatus[room_test]['characterPosition'][npcNum] = 'empty';
+	
+		io.to(room_test).emit('npcOut', npcNum);
+	}
 
-
-	time = time * 1000;
+	// 게임시간 = 총 게임시간에서 앞 준비시간, 뒤 마무리 시간 제외한 값
+	var gameTime = totalGameTime - ( frontSideTime + backSideTime );
+	// 남은 게임 시간 계산
+	remainingPlayTime = (gameTime * 1000) - (new Date().getTime - roomStatus[room_test]['gameStartTime']);
 
 	// 재귀
-	if(true) {
+	if(remainingPlayTime > 0 && roomStatus[room_test] == 'handAllReady') {
+
+		// 다음 함수 호출 시간
+		var callTime = remainingPlayTime;
+
 		setTimeout(function() {
 			npcOutSocket(roomStatus, io)
-		}, time);
+		}, callTime);
 	}
 }
 
@@ -185,24 +197,9 @@ function initPosition(playerNum, chair) {
 };
 
 
-// npc가 퇴장하는 랜덤 시간 배열 return
-// deeps level 3
-function randomTimeNpcOutArray(npcCnt) {
-    var averOutTime = (totalGameTime - sideTime * 2) / npcCnt;
-
-    var outTimeArray = new Array();
-    for(var i=0; i<npcCnt; i++) {
-       var randomNum = Math.floor(Math.random() * 6); // 0~5의 값을 뽑아내기 위함 맞는지 체크 필요
-       outTimeArray[i] = averOutTime - randomNum;
-    }
-    outTimeArray[npcCnt] = averOutTime;
-
-   return outTimeArray;
-};
-
 // npc 랜덤 퇴장 자리 선정
 // deeps level 3
-function randomPositionNpcArray(npcPosition) {
+function randomPositionNpc(npcPosition) {
 
     var temp = 0;
     var arrayCnt = 0;
