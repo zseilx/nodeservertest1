@@ -4,7 +4,6 @@ const room_test = 'room1';
 const totalGameTime = 180; // 게임 총 시간
 const sideTime = 15; // 게임 양 끝의 대기 시간? (게임 시작 대기, 게임 종료 전 진행을 위한 시간)
 
-
 // 2018_02_15
 // 게임 시작 시 유저와 NPC의 자리를 랜덤 생성 후 전달
 // deeps level 1
@@ -82,7 +81,6 @@ function handReady(socket, roomStatus, io) {
 				console.log('ready한 사람 수 : ',readyNum);
 			}
 		}
-
 
 		if(readyNum==userNum){
 			console.log('유저 모두 인게임 완료!!! 젠부사쓰!!!!!!!!!!!!!!!');

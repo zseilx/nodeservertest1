@@ -112,6 +112,7 @@ io.sockets.on('connection', function (socket) {
 	// 인게임에서 유저가 준비동작을 갖추다가 다른 동작을 취했을 때
 	// socket.on('handNotReady', function(data)
 	initGameStart.handNotReady(socket, roomStatus, io);
+
 	// voiceTalk
 
 });
