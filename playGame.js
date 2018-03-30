@@ -46,18 +46,19 @@ function getDropGun(socket) {
 // 플레이어가 총을 쐈을 때
 // deeps level 1
 function getShootGun(socket,io, roomStatus) {
-    socket.on('shootGun', function(data) {
+    socket.on('shootGun', function(jsonObj) {
         
         //인게임에서 유저 수 구하기 위한 변수
         var userCnt = 0;
 
         console.log('총 발사');
         //총에 맞은 npc또는 캐릭터 배열 비움
-        roomStatus[room_test]['characterPosition'][data] = 'empty'; 
+        roomStatus[room_test]['characterPosition'][jsonObj.dieNum] = 'empty'; 
         console.log('배열 확인 : ' ,   roomStatus[room_test]['characterPosition']);
 
+
         //방 전체 데이터 전송
-        io.to(room_test).emit('whoHit', data);
+        io.to(room_test).emit('whoHit', jsonObj);
 
         //생존 유저수 체크
         for(i = 0 ; i < 8 ; i++){
@@ -74,17 +75,19 @@ function getShootGun(socket,io, roomStatus) {
 
             console.log('게임 끝');   
         
-            //방 유저수 구함
-            var userNum = roomStatus[room_test]['users'].length;
+            // //방 유저수 구함
+            // var userNum = roomStatus[room_test]['users'].length;
 
-            for(var i=0 ; i < userNum ; i++){
+            // for(var i=0 ; i < userNum ; i++){
                 
-                //방 유저 상태를 notReady로 바꿈
-                roomStatus[room_test]['users'][i][1] = 'notReady';
-            }
+            //     //방 유저 상태 배열을 삭제
+            //     delete roomStatus[room_test]['users'];
+            // }
             
             //게임상태 변경
-            roomStatus[room_test]['gameStatus'] = 'end';
+            delete roomStatus[room_test];
+
+     
             io.to(room_test).emit('endGame', 'endGame');    
         }
     });

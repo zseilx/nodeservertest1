@@ -29,7 +29,7 @@ var userList = new Array();
 */
 var roomStatus = new Array();
 
-roomStatus[room_test] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
+
 
 
 // 2018_01_28 
@@ -112,6 +112,7 @@ io.sockets.on('connection', function (socket) {
 	// 인게임에서 유저가 준비동작을 갖추다가 다른 동작을 취했을 때
 	// socket.on('handNotReady', function(data)
 	initGameStart.handNotReady(socket, roomStatus, io);
+
 	// voiceTalk
 
 });
