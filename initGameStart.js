@@ -245,25 +245,12 @@ function handReadyTime(roomStatus, room_test, io) {
 // 게임 타이머 함수
 // deeps level 3
 function gameTime(roomStatus, io){
-	console.log('좋아 게임시간 3분 셀께!!!!!');
-	
-	//만약 게임이 진행되고 있다면
-	if(roomStatus[room_test]['gameStatus'] = 'handAllReady'){
-	
-		//방에 접속해 있는 유저 수
-		var userCnt = roomStatus[room_test]['users'].length;
-
-			for(var i=0 ; i < userCnt ; i++){
-				
-				//방 유저 상태를 notReady로 바꿈
-				roomStatus[room_test]['users'][i][1] = 'notReady';						
-			}
-
 		console.log('게임 타임 끝');
+		
+		//방 배열 삭제
+		delete roomStatus[room_test];
 		//게임 끝 정보 서버에 전송
-		//socket.emit('timeOver', 'timeOver'); 
-		io.to(room_test).emit('timeOver', 'timeOver'); 
-	}
+		io.to(room_test).emit('timeOver', 'timeOver'); 	
 }
 
 

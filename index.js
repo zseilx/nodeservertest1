@@ -29,7 +29,7 @@ var userList = new Array();
 */
 var roomStatus = new Array();
 
-roomStatus[room_test] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
+
 
 
 // 2018_01_28 

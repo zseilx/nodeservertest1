@@ -41,7 +41,10 @@ function joinRoom(socket, roomStatus) {
 		roomList[roomname][userCnt][0].push(userId);
 		roomList[roomname][userCnt][1].push('notReady');
 		*/
-
+		// 테스트용 코드 방 생성
+		if(roomStatus[room_test] == null)
+			roomStatus[room_test] = new Array();
+		
 		// 테스트용 코드
 		// 방에 입장 시 새로운 방 생성  및 유저의 정보를 방 정보에 삽입
 		if(roomStatus[room_test]['users'] == null) 

@@ -56,6 +56,8 @@ function getShootGun(socket,io, roomStatus) {
         roomStatus[room_test]['characterPosition'][data] = 'empty'; 
         console.log('배열 확인 : ' ,   roomStatus[room_test]['characterPosition']);
 
+        var shootData = new Array();
+
         //방 전체 데이터 전송
         io.to(room_test).emit('whoHit', data);
 
@@ -74,17 +76,19 @@ function getShootGun(socket,io, roomStatus) {
 
             console.log('게임 끝');   
         
-            //방 유저수 구함
-            var userNum = roomStatus[room_test]['users'].length;
+            // //방 유저수 구함
+            // var userNum = roomStatus[room_test]['users'].length;
 
-            for(var i=0 ; i < userNum ; i++){
+            // for(var i=0 ; i < userNum ; i++){
                 
-                //방 유저 상태를 notReady로 바꿈
-                roomStatus[room_test]['users'][i][1] = 'notReady';
-            }
+            //     //방 유저 상태 배열을 삭제
+            //     delete roomStatus[room_test]['users'];
+            // }
             
             //게임상태 변경
-            roomStatus[room_test]['gameStatus'] = 'end';
+            delete roomStatus[room_test];
+
+     
             io.to(room_test).emit('endGame', 'endGame');    
         }
     });
