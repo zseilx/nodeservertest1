@@ -87,3 +87,23 @@ function randomPositionNpcArray(npcPosition) {
 
     return random;
 }
+
+
+// npc 랜덤 퇴장 자리 선정
+// deeps level 4
+// function randomPositionNpc(npcPosition) 내부 로직 변경
+// NPC 찾는 부분 위에 indexOf를 사용하는 것으로 변경
+for(var i=0; i<npcPosition.length; i++) {
+	if(npcPosition[i] == 'NPC') {
+		random[arrayCnt] = i;
+		arrayCnt++;
+	}
+}
+// 그 배열 가운데서 랜덤으로 하나를 선택.
+for (var i = 0; i < random.length; i++) {
+	var num = Math.floor((Math.random() * random.length - i) + i);
+
+	temp = random[i];
+	random[i] = random[num];
+	random[num] = temp;
+}

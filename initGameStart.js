@@ -4,6 +4,8 @@ const room_test = 'room1';
 const totalGameTime = 180; // 게임 총 시간
 const frontSideTime = 15; // 게임 시작 대기 시간
 const backSideTime = 15; // 게임 종료 전 진행을 위한 시간
+const PLUSTIME = 5; // NPC 랜덤 퇴장 + 시간 간격
+const MINUSTIME = -5; // NPC 랜덤 퇴장 - 시간 간격
 
 
 // 2018_02_15
@@ -24,7 +26,7 @@ function sendInit(socket, roomStatus, chair, io) {
 			console.log("플레이어 수 : " + playerNum);
 
 			// 위치 랜덤 생성 배열 가져오기
-			var arr = initPosition(playerNum, chair);
+			var arr = initPosition(chair);
 
 			roomStatus[room_test]['characterPosition'] = new Array();
 
@@ -140,30 +142,51 @@ function handNotReady(socket, roomStatus, io){
 // deeps level 3
 // Recursive function 재귀 함수
 function npcOutSocket(roomStatus, io){
+	var callTime = backSideTime * 1000; // 다음 재귀 함수 호출 시간
+	// 캐릭터 포지션 값중 NPC들의 위치 번호를 저장하는 Array
+	var npcArray = randomPositionNpc(roomStatus[room_test]['characterPosition']);
+	// npcOut 숫자를 받아옴
 
+	// 초기 npcOutSocket 함수 호출시 실행 됨
 	if(roomStatus[room_test]['gameStartTime'] == null) {
-		roomStatus[room_test]['gameStartTime'] = new Date().getTime();
-	} else {
+		roomStatus[room_test]['gameStartTime'] = new Date().getTime(); // 초기 게임 시작 시간 저장
 
-		console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + npcNum);
+		// 가장 처음 이 함수가 시작 될 경우 게임이 갓 시작된 상태임.
+		// 이 상태에서 초기 프론트 대기시간을 재귀함수 callTime에 1000을 곱한 상태로 더함으로써
+		// 프론트 콜 타임을 적용 해줌
+		callTime = callTime + (frontSideTime * 1000);
 
-		
+	} else if(npcArray.length > 0) {
+		var outNpcNum = Math.floor(Math.random() * npcArray.length);
 
-		roomStatus[room_test]['characterPosition'][npcNum] = 'empty';
+		roomStatus[room_test]['characterPosition'][outNpcNum] = 'empty';
 	
-		io.to(room_test).emit('npcOut', npcNum);
+		console.log('npc퇴장 이벤트 발생함' + '   npcNum = ' + outNpcNum);
+		io.to(room_test).emit('npcOut', outNpcNum)
+
+	// NPC 배열에 아무것도 없을 시 모든 NPC가 나갔거나 사망했으므로 재귀 호출 없이 리턴 해버림
+	} else {
+		return ;
 	}
 
-	// 게임시간 = 총 게임시간에서 앞 준비시간, 뒤 마무리 시간 제외한 값
-	var gameTime = totalGameTime - ( frontSideTime + backSideTime );
+	// 게임시간 = 총 게임시간에서 뒤 마무리 시간 제외한 값
+	// (총 게임시간 - 마무리시간)
+	var gameTime = totalGameTime - backSideTime;
+	
 	// 남은 게임 시간 계산
+	// 게임시간 - (현재시간 - 게임 시작시간)
 	remainingPlayTime = (gameTime * 1000) - (new Date().getTime - roomStatus[room_test]['gameStartTime']);
 
 	// 재귀
 	if(remainingPlayTime > 0 && roomStatus[room_test] == 'handAllReady') {
 
+		var nextNpcOutTime = remainingPlayTime / npcArray.length; // 다음 NPC퇴장 시간을 남은 NPC수만큼 나눔
+		var randomTime = Math.floor(Math.random() * (PLUSTIME - MINUSTIME)) + MINUSTIME; // npc퇴장 시간 랜덤부여
+		randomTime *= 1000;
+	
 		// 다음 함수 호출 시간
-		var callTime = remainingPlayTime;
+		callTime += nextNpcOutTime;
+		callTime += randomTime;
 
 		setTimeout(function() {
 			npcOutSocket(roomStatus, io)
@@ -176,7 +199,7 @@ function npcOutSocket(roomStatus, io){
 // 2018_02_15
 // npc 및 player 위치 랜덤생성
 // deeps level 2
-function initPosition(playerNum, chair) {
+function initPosition(chair) {
 
 	var position = new Array(chair);
 
@@ -198,30 +221,20 @@ function initPosition(playerNum, chair) {
 
 
 // npc 랜덤 퇴장 자리 선정
-// deeps level 3
-function randomPositionNpc(npcPosition) {
+// deeps level 4
+function randomPositionNpc(characterPosition) {
+	var npcArray = new Array(); // NPC들의 번호를 배열에 저장
 
-    var temp = 0;
-    var arrayCnt = 0;
-    var random = new Array();
-    
-    for(var i=0; i<npcPosition.length; i++) {
-        if(npcPosition[i] == 'NPC') {
-            random[arrayCnt] = i;
-            arrayCnt++;
-        }
-    }
+	// NPC가 살아 있는 자리의 번호들을 배열에 저장
+	idx = characterPosition.indexOf('NPC');
+	while(idx != -1) {
+		npcArray.push(idx);
+		idx = characterPosition.indexOf('NPC', idx + 1);
+	}
 
-	for (var i = 0; i < random.length; i++) {
-        var num = Math.floor((Math.random() * random.length - i) + i);
-
-		temp = random[i];
-		random[i] = random[num];
-        random[num] = temp;
-    }
-
-    return random;
+    return npcArray;
 }
+
 
 // 플레이어 핸드레디 전부 확인 시 게임 시작 및 npc 자리 셋팅 등 실제 게임 시작
 // deeps level 2
