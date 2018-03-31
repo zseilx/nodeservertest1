@@ -50,6 +50,10 @@ function joinRoom(socket, roomStatus) {
 		if(roomStatus[room_test]['users'] == null) 
 			roomStatus[room_test]['users'] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
 
+		if(roomStatus[room_test]['timeEvent'] == null){
+			roomStatus[room_test]['timeEvent'] = new Array();
+		}
+
 		var userCnt = roomStatus[room_test]['users'].length;
 		// console.log('joinRoom : userCnt = ' + userCnt);
 		

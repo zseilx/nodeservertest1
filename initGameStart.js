@@ -58,15 +58,7 @@ function handReady(socket, roomStatus, io) {
 		//Ready한 사람의 수
 		var readyNum = 0;
 
-		//손이 들어 올때마다 배열 값 변경
-		// if(roomStatus[room_test]['handReady'][userId]==null){
-		// 	console.log('손 하나 들어간 상태');
-		// 	roomStatus[room_test]['handReady'][userId] = 'oneIn';
-		// }else if(roomStatus[room_test]['handReady'][userId]=='oneIn'){
-		// 	console.log('손 두개 들어간 상태');
-		// 	roomStatus[room_test]['handReady'][userId] = 'twoIn';
-		// }
-
+		
 		roomStatus[room_test]['handReady'][userId] = 'twoIn';
 
 		for (const key in roomStatus[room_test]['handReady']) {
@@ -80,7 +72,12 @@ function handReady(socket, roomStatus, io) {
 		if(readyNum==userNum){
 			console.log('유저 모두 인게임 완료!!! 젠부사쓰!!!!!!!!!!!!!!!');
 			console.log('타이머 3초!!!');
-			setTimeout(handReadyTime, 3000 , roomStatus, room_test, io);
+			
+			roomStatus[room_test]['timeEvent']['handReadyTime'] = new Array();
+
+			roomStatus[room_test]['timeEvent']['handReadyTime'] =
+				setTimeout(handReadyTime, 3000 , roomStatus, room_test, io);
+			
 			io.to(room_test).emit('handAllReady', 'handAllReady');
 		}
 	});
@@ -178,6 +175,8 @@ function npcOutSocket(roomStatus, io){
 		callTime += nextNpcOutTime;
 		callTime += randomTime;
 
+		roomStatus[room_test]['timeEvent']['npcOutSocket'] = new Array();
+		roomStatus[room_test]['timeEvent']['npcOutSocket'] =
 		setTimeout(function() {
 			npcOutSocket(roomStatus, io)
 		}, callTime);
@@ -266,8 +265,27 @@ function handReadyTime(roomStatus, room_test, io) {
 	roomStatus[room_test]['gameStatus']=='handAllReady';
 	io.to(room_test).emit('timeUp', 'timeUp');
 
+	//정전변수
+	var lightList = new Array();
+
+	lightList[0] = Math.floor(Math.random() * (45 - 15))+15;
+	lightList[1] = Math.floor(Math.random() * (75 - 45))+45;
+	lightList[2] = Math.floor(Math.random() * (105 - 75))+75;
+	lightList[3] = Math.floor(Math.random() * (135 - 105))+105;
+	lightList[4] = Math.floor(Math.random() * (180 - 135))+135;
+
+	
+
 	//게임 타이머 설정
-	setTimeout(gameTime, TOTAL_GAME_TIME * 1000 , roomStatus, io);
+	
+	roomStatus[room_test]['timeEvent']['gameTime'] = setTimeout(gameTime, TOTAL_GAME_TIME * 1000 , roomStatus, io);
+	
+	//정전 타이머 설정
+	roomStatus[room_test]['timeEvent']['lightTime'] = new Array();
+	for( var i = 1 ; i <= 5 ; i++){
+		roomStatus[room_test]['timeEvent']['lightTime'][i] =
+			setTimeout(lightTime, lightList[i] * 1000 , roomStatus, io);
+	}
 
 	// Recursive function 재귀 함수
 	// npc 나가는 이벤트
@@ -284,6 +302,12 @@ function gameTime(roomStatus, io) {
 		delete roomStatus[room_test];
 		//게임 끝 정보 서버에 전송
 		io.to(room_test).emit('timeOver', 'timeOver'); 	
+}
+
+function lightTime(roomStatus, io) {
+		console.log('정전 발생');
+		
+		io.to(room_test).emit('lightOut', 'lightOut'); 	
 }
 
 
