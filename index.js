@@ -13,11 +13,6 @@ const playGame = require('./playGame');
 const voiceTalk = require('./voiceTalk');
 
 
-// 방 생성 관련 테스트
-const room_test = 'room1';
-// 한 게임에 진행 할 수 있는 최대 인원 (유저 + NPC)
-const chair = 8;
-
 // 접속해 있는 유저들 정보
 // 키 값으로 유저 아이디가 들어가며, 밸류값으로 소켓 아이디 저장
 // userList['유저ID'] = socket.id;
@@ -103,7 +98,7 @@ io.sockets.on('connection', function (socket) {
 	/**************************************** initGameStart ****************************************/
 	// 맵에서의 각 플레이어들의 위치를 랜덤으로 생성하여 뿌려주는 역할
 	// socket.on('reqPosition', function()
-	initGameStart.sendInit(socket, roomStatus, chair, io);
+	initGameStart.sendInit(socket, roomStatus, io);
 
 	// 인게임에서 유저가 준비동작을 갖추었을 때
 	// socket.on('handReady', function(data)
