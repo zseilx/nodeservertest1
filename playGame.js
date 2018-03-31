@@ -83,6 +83,15 @@ function getShootGun(socket,io, roomStatus) {
             //     //방 유저 상태 배열을 삭제
             //     delete roomStatus[room_test]['users'];
             // }
+
+            //실행중인 settimeout 모두 삭제
+            for(var key in roomStatus[room_test]['timeEvent']){
+			    clearTimeout(roomStatus[room_test]['timeEvent'][key]);
+            }
+            for(var i = 0 ; i < 5 ; i++){
+                clearTimeout(roomStatus[room_test]['timeEvent']['lightTime'][i]);
+            }
+            
             
             //게임상태 변경
             delete roomStatus[room_test];
