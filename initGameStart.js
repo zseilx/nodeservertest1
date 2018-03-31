@@ -1,4 +1,9 @@
 
+
+// 캐릭터 랜덤 위치 생성 및 배치, 재배치 관련 함수 파일
+const setPosition = require('./setPosition');
+
+
 const room_test = 'room1';
 const TOTAL_GAME_TIME = 180; // 게임 총 시간
 const FRONT_SIDE_TIME = 15; // 게임 시작 대기 시간
@@ -25,9 +30,10 @@ function sendInit(socket, roomStatus, io) {
 			console.log("플레이어 수 : " + playerNum);
 
 			// 위치 랜덤 생성 배열 가져오기
-			var randomPositionArrar = createRandomPosition();
+			var randomPositionArrar = setPosition.createRandomPosition();
 
-			setRandomPosition(roomStatus, randomPositionArrar);
+			// 전체 캐릭터 위치 지정
+			setPosition.setRandomPosition(roomStatus, randomPositionArrar);
 
 			// console.log('reqPosition : socket send event = resPosition');
 
@@ -185,60 +191,6 @@ function npcOutSocket(roomStatus, io){
 
 
 
-// 2018_02_15
-// npc 및 player 위치 랜덤생성
-// deeps level 2
-function createRandomPosition() {
-
-	var position = new Array();
-
-	for (var i = 0; i < CHAIR; i++) {
-		position[i] = i;
-	}
-
-	var temp = 0;
-	for (var i = 0; i < CHAIR; i++) {
-		var num = Math.floor((Math.random() * CHAIR - i) + i);
-
-		temp = position[i];
-		position[i] = position[num];
-		position[num] = temp;
-	}
-
-	return position;
-};
-
-// 2018_03_31
-// 게임 시작 시 캐릭터 위치 배치, 및 도중 위치 변경 시 처리하는 함수
-// deeps level 2
-function setRandomPosition(roomStatus, randomPosition) {
-	// 초기 캐릭터 배치 이벤트
-	if(roomStatus[room_test]['characterPosition'] == null) {
-
-		roomStatus[room_test]['characterPosition'] = new Array();
-
-		var userNum = roomStatus[room_test]['users'].length;
-		var i=0;
-		// user 수만큼 자리 배치를 먼저 한 후
-		for(; i < userNum ; i++) {
-			roomStatus[room_test]['characterPosition'][randomPosition[i]] = roomStatus[room_test]['users'][i][0];
-		}
-		// 나머지는 NPC로 차리를 채움
-		for(; i < CHAIR; i++) {
-			roomStatus[room_test]['characterPosition'][randomPosition[i]] = 'NPC';
-		}
-
-	// 이미 배치 된 상태를 바꾸는 형태
-	} else {
-		var temp = '';
-		
-		for(var i=0; i < CHAIR; i++) {
-			temp = roomStatus[room_test]['characterPosition'][i];
-			roomStatus[room_test]['characterPosition'][i] = roomStatus[room_test]['characterPosition'][randomPosition[i]];
-			roomStatus[room_test]['characterPosition'][randomPosition[i]] = temp;
-		}
-	}
-}
 
 
 
@@ -277,7 +229,6 @@ function handReadyTime(roomStatus, room_test, io) {
 	
 
 	//게임 타이머 설정
-	
 	roomStatus[room_test]['timeEvent']['gameTime'] = setTimeout(gameTime, TOTAL_GAME_TIME * 1000 , roomStatus, io);
 	
 	//정전 타이머 설정
