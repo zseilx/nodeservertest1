@@ -45,68 +45,83 @@ function getDropGun(socket) {
     });
 };
 
-// 2018_02_22
+// 2018_04_07
 // 플레이어가 총을 쐈을 때
 // deeps level 1
-function getShootGun(socket,io, roomStatus) {
-    socket.on('shootGun', function(jsonObj) {
+function getShootGun(socket,io,roomStatus){
+    socket.on('shootGun', function(data){
+        console.log("총쏨");
+        socket.broadcast.to(room_test).emit('whoShoot', data);
+    });
+}
+
+
+// 2018_04_07
+// 플레이어가 총에 맞았을 때
+// deeps level 1
+function getHitGun(socket,io, roomStatus) {
+    socket.on('hitGun', function(data) {
         
         //인게임에서 유저 수 구하기 위한 변수
         var userCnt = 0;
 
-        console.log('총 발사');
+        console.log('총 맞음');
+        var dieName = roomStatus[room_test]['characterPosition'][data];
         //총에 맞은 npc또는 캐릭터 배열 비움
-        roomStatus[room_test]['characterPosition'][jsonObj.dieNum] = 'empty'; 
+        roomStatus[room_test]['characterPosition'][data] = 'empty'; 
         console.log('배열 확인 : ' ,   roomStatus[room_test]['characterPosition']);
 
 
         //방 전체 데이터 전송
-        io.to(room_test).emit('whoHit', jsonObj);
+        io.to(room_test).emit('whoHit', data);
 
-        //생존 유저수 체크
-        for(i = 0 ; i < 8 ; i++){
-             if(roomStatus[room_test]['characterPosition'][i] != 'empty' && 
-                roomStatus[room_test]['characterPosition'][i] != 'NPC') {
-                  userCnt++;
+        if(dieName != 'NPC') {
+
+            //생존 유저수 체크
+            for(i = 0 ; i < 8 ; i++){
+                if(roomStatus[room_test]['characterPosition'][i] != 'empty' && 
+                    roomStatus[room_test]['characterPosition'][i] != 'NPC') {
+                    userCnt++;
+                }
             }
-        }
-        console.log("생존 유저 수 : " , userCnt);
-        
-
-        //유저가 한명 살아남았을 때
-        if(userCnt == 1){
-
-            console.log('게임 끝');   
-        
-            // //방 유저수 구함
-            // var userNum = roomStatus[room_test]['users'].length;
-
-            // for(var i=0 ; i < userNum ; i++){
-                
-            //     //방 유저 상태 배열을 삭제
-            //     delete roomStatus[room_test]['users'];
-            // }
-
-            //실행중인 settimeout 모두 삭제
-            for(var key in roomStatus[room_test]['timeEvent']){
-			    clearTimeout(roomStatus[room_test]['timeEvent'][key]);
-            }
-            for(var i = 0 ; i < 5 ; i++){
-                clearTimeout(roomStatus[room_test]['timeEvent']['lightTime'][i]);
-            }
+            console.log("생존 유저 수 : " , userCnt);
             
-            //게임상태 변경
-            delete roomStatus[room_test];
 
-            io.to(room_test).emit('endGame', 'endGame');    
+            //유저가 한명 살아남았을 때
+            if(userCnt == 1){
 
-        // 다른 유저를 처리 했는데 전체 유저 수가 2명 이상일 경우 자리를 재 배치 합니다.
-        } else if(userCnt >= 2) {
-			// 위치 랜덤 생성 배열 가져오기
-			var randomPositionArrar = setPosition.createRandomPosition();
+                console.log('게임 끝');   
+            
+                // //방 유저수 구함
+                // var userNum = roomStatus[room_test]['users'].length;
 
-			// 전체 캐릭터 위치 지정
-			setPosition.setRandomPosition(roomStatus, randomPositionArrar);
+                // for(var i=0 ; i < userNum ; i++){
+                    
+                //     //방 유저 상태 배열을 삭제
+                //     delete roomStatus[room_test]['users'];
+                // }
+
+                //실행중인 settimeout 모두 삭제
+                for(var key in roomStatus[room_test]['timeEvent']){
+                    clearTimeout(roomStatus[room_test]['timeEvent'][key]);
+                }
+                for(var i = 0 ; i < 5 ; i++){
+                    clearTimeout(roomStatus[room_test]['timeEvent']['lightTime'][i]);
+                }
+                
+                //게임상태 변경
+                delete roomStatus[room_test];
+
+                io.to(room_test).emit('endGame', 'endGame');    
+
+            // 다른 유저를 처리 했는데 전체 유저 수가 2명 이상일 경우 자리를 재 배치 합니다.
+            } else if(userCnt >= 2) {
+                // 위치 랜덤 생성 배열 가져오기
+                var randomPositionArrar = setPosition.createRandomPosition();
+
+                // 전체 캐릭터 위치 지정
+                setPosition.setRandomPosition(roomStatus, randomPositionArrar);
+            }
         }
     });
 };
@@ -131,4 +146,5 @@ exports.getMovement = getMovement;
 exports.getGun = getGun;
 exports.hidingGun = hidingGun;
 exports.getDropGun = getDropGun;
+exports.getHitGun = getHitGun;
 exports.getShootGun = getShootGun;
