@@ -1,16 +1,21 @@
 
-const room_test = 'room1';
 
-const totalGameTime = 180; // 게임 총 시간
-const frontSideTime = 15; // 게임 시작 대기 시간
-const backSideTime = 15; // 게임 종료 전 진행을 위한 시간
-const PLUSTIME = 5; // NPC 랜덤 퇴장 + 시간 간격
-const MINUSTIME = -5; // NPC 랜덤 퇴장 - 시간 간격
+// 캐릭터 랜덤 위치 생성 및 배치, 재배치 관련 함수 파일
+const setPosition = require('./setPosition');
+
+
+const room_test = 'room1';
+const TOTAL_GAME_TIME = 180; // 게임 총 시간
+const FRONT_SIDE_TIME = 15; // 게임 시작 대기 시간
+const BACK_SIDE_TIME = 15; // 게임 종료 전 진행을 위한 시간
+const PLUS_TIME = 5; // NPC 랜덤 퇴장 + 시간 간격
+const MINUS_TIME = -5; // NPC 랜덤 퇴장 - 시간 간격
+const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
 
 // 2018_02_15
 // 게임 시작 시 유저와 NPC의 자리를 랜덤 생성 후 전달
 // deeps level 1
-function sendInit(socket, roomStatus, chair, io) {
+function sendInit(socket, roomStatus, io) {
 	//socket.on('sendInit', function(roomName) {
 	socket.on('reqPosition', function() {
 		// console.log('reqPosition : socket get event');
@@ -25,17 +30,10 @@ function sendInit(socket, roomStatus, chair, io) {
 			console.log("플레이어 수 : " + playerNum);
 
 			// 위치 랜덤 생성 배열 가져오기
-			var arr = initPosition(chair);
+			var randomPositionArrar = setPosition.createRandomPosition();
 
-			roomStatus[room_test]['characterPosition'] = new Array();
-
-			for(var i=0; i < chair; i++) {
-				if(i < playerNum) {
-					roomStatus[room_test]['characterPosition'][arr[i]] = roomStatus[room_test]['users'][i][0];
-				} else {
-					roomStatus[room_test]['characterPosition'][arr[i]] = 'NPC';
-				}
-			}
+			// 전체 캐릭터 위치 지정
+			setPosition.setRandomPosition(roomStatus, randomPositionArrar);
 
 			// console.log('reqPosition : socket send event = resPosition');
 
@@ -137,9 +135,9 @@ function handNotReady(socket, roomStatus, io){
 // deeps level 3
 // Recursive function 재귀 함수
 function npcOutSocket(roomStatus, io){
-	var callTime = backSideTime * 1000; // 다음 재귀 함수 호출 시간
+	var callTime = BACK_SIDE_TIME * 1000; // 다음 재귀 함수 호출 시간
 	// 캐릭터 포지션 값중 NPC들의 위치 번호를 저장하는 Array
-	var npcArray = randomPositionNpc(roomStatus[room_test]['characterPosition']);
+	var npcArray = getNpcPosition(roomStatus[room_test]['characterPosition']);
 	// npcOut 숫자를 받아옴
 
 	// 초기 npcOutSocket 함수 호출시 실행 됨
@@ -149,7 +147,7 @@ function npcOutSocket(roomStatus, io){
 		// 가장 처음 이 함수가 시작 될 경우 게임이 갓 시작된 상태임.
 		// 이 상태에서 초기 프론트 대기시간을 재귀함수 callTime에 1000을 곱한 상태로 더함으로써
 		// 프론트 콜 타임을 적용 해줌
-		callTime = callTime + (frontSideTime * 1000);
+		callTime = callTime + (FRONT_SIDE_TIME * 1000);
 
 	} else if(npcArray.length > 0) {
 		var outNpcNum = Math.floor(Math.random() * npcArray.length);
@@ -166,7 +164,7 @@ function npcOutSocket(roomStatus, io){
 
 	// 게임시간 = 총 게임시간에서 뒤 마무리 시간 제외한 값
 	// (총 게임시간 - 마무리시간)
-	var gameTime = totalGameTime - backSideTime;
+	var gameTime = TOTAL_GAME_TIME - BACK_SIDE_TIME;
 	
 	// 남은 게임 시간 계산
 	// 게임시간 - (현재시간 - 게임 시작시간)
@@ -176,7 +174,7 @@ function npcOutSocket(roomStatus, io){
 	if(remainingPlayTime > 0 && roomStatus[room_test] == 'handAllReady') {
 
 		var nextNpcOutTime = remainingPlayTime / npcArray.length; // 다음 NPC퇴장 시간을 남은 NPC수만큼 나눔
-		var randomTime = Math.floor(Math.random() * (PLUSTIME - MINUSTIME)) + MINUSTIME; // npc퇴장 시간 랜덤부여
+		var randomTime = Math.floor(Math.random() * (PLUS_TIME - MINUS_TIME)) + MINUS_TIME; // npc퇴장 시간 랜덤부여
 		randomTime *= 1000;
 	
 		// 다음 함수 호출 시간
@@ -193,33 +191,12 @@ function npcOutSocket(roomStatus, io){
 
 
 
-// 2018_02_15
-// npc 및 player 위치 랜덤생성
-// deeps level 2
-function initPosition(chair) {
-
-	var position = new Array(chair);
-
-	for (var i = 0; i < chair; i++) {
-		position[i] = i;
-	}
-
-	var temp = 0;
-	for (var i = 0; i < chair; i++) {
-		var num = Math.floor((Math.random() * chair - i) + i);
-
-		temp = position[i];
-		position[i] = position[num];
-		position[num] = temp;
-	}
-
-	return position;
-};
 
 
-// npc 랜덤 퇴장 자리 선정
+
+// npc 위치 받아오기
 // deeps level 4
-function randomPositionNpc(characterPosition) {
+function getNpcPosition(characterPosition) {
 	var npcArray = new Array(); // NPC들의 번호를 배열에 저장
 
 	// NPC가 살아 있는 자리의 번호들을 배열에 저장
@@ -252,9 +229,7 @@ function handReadyTime(roomStatus, room_test, io) {
 	
 
 	//게임 타이머 설정
-	roomStatus[room_test]['timeEvent']['gameTime'] = new Array();
-	roomStatus[room_test]['timeEvent']['gameTime'] = 
-		setTimeout(gameTime, totalGameTime * 1000 , roomStatus, io);
+	roomStatus[room_test]['timeEvent']['gameTime'] = setTimeout(gameTime, TOTAL_GAME_TIME * 1000 , roomStatus, io);
 	
 	//정전 타이머 설정
 	roomStatus[room_test]['timeEvent']['lightTime'] = new Array();

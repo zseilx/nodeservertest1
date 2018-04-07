@@ -1,4 +1,7 @@
 
+// 캐릭터 랜덤 위치 생성 및 배치, 재배치 관련 함수 파일
+const setPosition = require('./setPosition');
+
 const room_test = 'room1';
 
 // 2018_02_05 
@@ -92,12 +95,18 @@ function getShootGun(socket,io, roomStatus) {
                 clearTimeout(roomStatus[room_test]['timeEvent']['lightTime'][i]);
             }
             
-            
             //게임상태 변경
             delete roomStatus[room_test];
 
-     
             io.to(room_test).emit('endGame', 'endGame');    
+
+        // 다른 유저를 처리 했는데 전체 유저 수가 2명 이상일 경우 자리를 재 배치 합니다.
+        } else if(userCnt >= 2) {
+			// 위치 랜덤 생성 배열 가져오기
+			var randomPositionArrar = setPosition.createRandomPosition();
+
+			// 전체 캐릭터 위치 지정
+			setPosition.setRandomPosition(roomStatus, randomPositionArrar);
         }
     });
 };
