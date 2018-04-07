@@ -1,5 +1,31 @@
+
+/******************************************************************************************************/
+/****************************************** External Module *******************************************/
+/******************************************************************************************************/
+const port = 5000;
+
+const app = require('express')();
+
+const server = require('http').createServer(app);
+
+server.listen(port, function() {
+	// 2018_01_28 
+	// Server 시작을 알리는 부분
+	console.log('Server Started!');
+});
+
 // socket.io 서버 생성
-const io = require('socket.io').listen(5000);
+// const io = require('socket.io').listen(port);
+const io = require('socket.io').listen(server);
+
+app.get('/', function(req, res){
+	res.sendFile(__dirname + '/testWeb/serverTestWeb.html');
+});
+
+
+/******************************************************************************************************/
+/****************************************** Internal Module *******************************************/
+/******************************************************************************************************/
 
 // 방 관리의 주요 기능들을 모아놓은 것
 const roomController = require('./roomController');
@@ -25,11 +51,11 @@ var userList = new Array();
 var roomStatus = new Array();
 
 
+/******************************************************************************************************/
+/*******************************************     Cycle     ********************************************/
+/******************************************************************************************************/
 
 
-// 2018_01_28 
-// Server 시작을 알리는 부분
-console.log('Server Started!');
 
 // serverController.errtest();
 
@@ -40,6 +66,14 @@ io.sockets.on('connection', function (socket) {
 
 	console.log('connected : ' + socket.id);
 
+	socket.emit('connection', {
+		type : 'connected'
+	});
+
+	socket.on('test', function(data) {
+		console.log('web에서 온 신호 수신 완료');
+		console.log(data);
+	});
 	/**************************************** roomController ****************************************/
 	// 방 생성
 	// socket.on('createRoom', function(roomName, userId)

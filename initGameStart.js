@@ -18,16 +18,17 @@ const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
 function sendInit(socket, roomStatus, io) {
 	//socket.on('sendInit', function(roomName) {
 	socket.on('reqPosition', function() {
+		console.log('initGameStart.sendInit function (reqPosition) socketEventt on'); // debug
 		// console.log('reqPosition : socket get event');
 
 		roomStatus[room_test]['gameStatus'] = 'go';
 
 
 		if(roomStatus[room_test]['characterPosition'] == null) {
-			console.log('sendInit : if = ' + '방생성');
+			// console.log('sendInit : if = ' + '방생성');
 			var playerNum = roomStatus[room_test]['users'].length;
 
-			console.log("플레이어 수 : " + playerNum);
+			// console.log("플레이어 수 : " + playerNum);
 
 			// 위치 랜덤 생성 배열 가져오기
 			var randomPositionArrar = setPosition.createRandomPosition();
@@ -40,7 +41,7 @@ function sendInit(socket, roomStatus, io) {
 			socket.emit('resPosition', roomStatus[room_test]['characterPosition']);
 
 		} else {
-			console.log('sendInit : else = ' + '방생성 되있음, 포지션 정보만 전송');
+			// console.log('sendInit : else = ' + '방생성 되있음, 포지션 정보만 전송');
 			socket.emit('resPosition', roomStatus[room_test]['characterPosition']);
 		}
 	});
@@ -70,14 +71,11 @@ function handReady(socket, roomStatus, io) {
 		for (const key in roomStatus[room_test]['handReady']) {
 			if(roomStatus[room_test]['handReady'][key] == 'twoIn'){
 				readyNum++;
-
-				console.log('ready한 사람 수 : ',readyNum);
 			}
 		}
 
 		if(readyNum==userNum){
-			console.log('유저 모두 인게임 완료!!! 젠부사쓰!!!!!!!!!!!!!!!');
-			console.log('타이머 3초!!!');
+			console.log('initGameStart.handReady function inGameStart 타이머 3초'); // debug
 			
 			roomStatus[room_test]['timeEvent']['handReadyTime'] = new Array();
 
@@ -104,14 +102,14 @@ function handNotReady(socket, roomStatus, io){
 
 
 		//게임시작 타이머를 세는중에 손을 지정위치에서 뺀 경우
-		if(roomStatus[room_test]['gameStatus']=='handReady'){
+		if(roomStatus[room_test]['gameStatus'] == 'handReady'){
 
 			if(roomStatus[room_test]['handReady'][userId] == 'twoIn'){
 				delete roomStatus[room_test]['handReady'][userId];
 			}
 			
 			//방 상태 go로 바꿈
-			roomStatus[room_test]['gameStatus']=='go';
+			roomStatus[room_test]['gameStatus'] == 'go';
 			//settimeout 정지
 			console.log('3초 세고 있는데 누가 손뺏다능!!!');
 			clearTimeout(handReadyTime);
@@ -119,7 +117,7 @@ function handNotReady(socket, roomStatus, io){
 
 			io.to(room_test).emit('handNotReady', 'handNotReady');
 
-		}else if(roomStatus[room_test]['gameStatus']=='go'){
+		}else if(roomStatus[room_test]['gameStatus'] == 'go'){
 			
 			if(roomStatus[room_test]['handReady'][userId] == 'twoIn'){
 				delete roomStatus[room_test]['handReady'][userId];
@@ -135,13 +133,14 @@ function handNotReady(socket, roomStatus, io){
 // deeps level 3
 // Recursive function 재귀 함수
 function npcOutSocket(roomStatus, io){
+	console.log('initGameStart.npcOutSocket function'); // debug
 	var callTime = BACK_SIDE_TIME * 1000; // 다음 재귀 함수 호출 시간
 	// 캐릭터 포지션 값중 NPC들의 위치 번호를 저장하는 Array
 	var npcArray = getNpcPosition(roomStatus[room_test]['characterPosition']);
-	// npcOut 숫자를 받아옴
 
 	// 초기 npcOutSocket 함수 호출시 실행 됨
-	if(roomStatus[room_test]['gameStartTime'] == null) {
+	if(typeof roomStatus[room_test]['gameStartTime'] === 'undefined') {
+		console.log('초기 npcOutSocket 함수 게임시작시간 셋팅'); // debug
 		roomStatus[room_test]['gameStartTime'] = new Date().getTime(); // 초기 게임 시작 시간 저장
 
 		// 가장 처음 이 함수가 시작 될 경우 게임이 갓 시작된 상태임.
@@ -150,7 +149,8 @@ function npcOutSocket(roomStatus, io){
 		callTime = callTime + (FRONT_SIDE_TIME * 1000);
 
 	} else if(npcArray.length > 0) {
-		var outNpcNum = Math.floor(Math.random() * npcArray.length);
+		var random = Math.floor(Math.random() * npcArray.length);
+		var outNpcNum = npcArray[random];
 
 		roomStatus[room_test]['characterPosition'][outNpcNum] = 'empty';
 	
@@ -159,6 +159,7 @@ function npcOutSocket(roomStatus, io){
 
 	// NPC 배열에 아무것도 없을 시 모든 NPC가 나갔거나 사망했으므로 재귀 호출 없이 리턴 해버림
 	} else {
+		console.log('npc가 아무도 없어서 끝남');
 		return ;
 	}
 
@@ -168,10 +169,13 @@ function npcOutSocket(roomStatus, io){
 	
 	// 남은 게임 시간 계산
 	// 게임시간 - (현재시간 - 게임 시작시간)
-	remainingPlayTime = (gameTime * 1000) - (new Date().getTime - roomStatus[room_test]['gameStartTime']);
+	remainingPlayTime = (gameTime * 1000) - (new Date().getTime() - roomStatus[room_test]['gameStartTime']);
+	console.log('initGameStart.npcOutSocket function : remainingPlayTime = ' + remainingPlayTime); // debug
+	
 
 	// 재귀
-	if(remainingPlayTime > 0 && roomStatus[room_test] == 'handAllReady') {
+	if(remainingPlayTime > 0 && roomStatus[room_test]['gameStatus'] == 'handAllReady') {
+		console.log('npc out event 아직 더 실행해야함');
 
 		var nextNpcOutTime = remainingPlayTime / npcArray.length; // 다음 NPC퇴장 시간을 남은 NPC수만큼 나눔
 		var randomTime = Math.floor(Math.random() * (PLUS_TIME - MINUS_TIME)) + MINUS_TIME; // npc퇴장 시간 랜덤부여
@@ -182,10 +186,9 @@ function npcOutSocket(roomStatus, io){
 		callTime += randomTime;
 
 		roomStatus[room_test]['timeEvent']['npcOutSocket'] = new Array();
-		roomStatus[room_test]['timeEvent']['npcOutSocket'] =
-		setTimeout(function() {
-			npcOutSocket(roomStatus, io)
-		}, callTime);
+		roomStatus[room_test]['timeEvent']['npcOutSocket'] =	setTimeout(function() {
+																	npcOutSocket(roomStatus, io)
+																}, callTime);
 	}
 }
 
@@ -214,7 +217,7 @@ function getNpcPosition(characterPosition) {
 // deeps level 2
 function handReadyTime(roomStatus, room_test, io) {
 	console.log('오케이 3초동안 준비 잘했어 진짜 게임 시작할께');
-	roomStatus[room_test]['gameStatus']=='handAllReady';
+	roomStatus[room_test]['gameStatus'] = 'handAllReady';
 	io.to(room_test).emit('timeUp', 'timeUp');
 
 	//정전변수

@@ -4,6 +4,7 @@
  * 
  */
 
+const room_test = 'room1';
 
 const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
 
@@ -35,8 +36,9 @@ function createRandomPosition() {
 // 게임 시작 시 캐릭터 위치 배치, 및 도중 위치 변경 시 처리하는 함수
 // deeps level 2
 function setRandomPosition(roomStatus, randomPosition) {
+	console.log('setPosition.setRandomPosition function loding'); // debug
 	// 초기 캐릭터 배치 이벤트
-	if(roomStatus[room_test]['characterPosition'] == null) {
+	if( typeof roomStatus[room_test]['characterPosition'] === 'undefined') {
 
 		roomStatus[room_test]['characterPosition'] = new Array();
 

@@ -28,6 +28,7 @@ function createRoom(socket, roomStatus) {
 function joinRoom(socket, roomStatus) {
 //	socket.on('joinRoom', function(roomName, userId) {
 	socket.on('joinRoom', function(userId) {
+		console.log('roomController.joinRoom function (joinRoom) socketEventt on'); // debug
 		
 		socket.join(room_test);
 		
@@ -42,15 +43,15 @@ function joinRoom(socket, roomStatus) {
 		roomList[roomname][userCnt][1].push('notReady');
 		*/
 		// 테스트용 코드 방 생성
-		if(roomStatus[room_test] == null)
+		if(typeof roomStatus[room_test] === 'undefined') {
 			roomStatus[room_test] = new Array();
-		
+		}
 		// 테스트용 코드
 		// 방에 입장 시 새로운 방 생성  및 유저의 정보를 방 정보에 삽입
-		if(roomStatus[room_test]['users'] == null) 
+		if(typeof roomStatus[room_test]['users'] === 'undefined') {
 			roomStatus[room_test]['users'] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
-
-		if(roomStatus[room_test]['timeEvent'] == null){
+		}
+		if(typeof roomStatus[room_test]['timeEvent'] === 'undefined'){
 			roomStatus[room_test]['timeEvent'] = new Array();
 		}
 
@@ -84,6 +85,7 @@ function joinRoom(socket, roomStatus) {
 function userReadyChk(socket, roomStatus, io) {
 
 	socket.on('checkReady', function(jsonObj) {
+		// console.log('roomController.userReadyChk function (checkReady) socketEventt on'); // debug
 		
 		// 레디 한 유저를 찾는 for문
 		for(var i=0; i<roomStatus[room_test]['users'].length; i++) {
@@ -95,7 +97,7 @@ function userReadyChk(socket, roomStatus, io) {
 					roomStatus[room_test]['users'][i][1] = 'ready';
 					// console.log('user is ready  userId = ' + jsonObj.nick);
 					// 방 내에 존재하는 사람들에게 레디 했다는 것을 전송
-					socket.broadcast.to(room_test).emit('ready', jsonObj.nick);
+					socket.broadcast.to(room_test).emit('ready', jsonObj);
 
 					// console.log('allReadyChk 전의 상황');
 					// 방 안에 존재하는 모든 사람들이 레디를 했는지 체크
