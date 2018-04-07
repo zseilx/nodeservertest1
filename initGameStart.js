@@ -223,20 +223,21 @@ function handReadyTime(roomStatus, room_test, io) {
 	//정전변수
 	var lightList = new Array();
 
-	lightList[0] = Math.floor(Math.random() * (45 - 15))+15;
+	lightList[0] = Math.floor(Math.random() * (10 - 5))+5;
 	lightList[1] = Math.floor(Math.random() * (75 - 45))+45;
 	lightList[2] = Math.floor(Math.random() * (105 - 75))+75;
 	lightList[3] = Math.floor(Math.random() * (135 - 105))+105;
 	lightList[4] = Math.floor(Math.random() * (180 - 135))+135;
 
+	console.log('첫번째 정전시간'+lightList[0]);
 	
-
 	//게임 타이머 설정
 	roomStatus[room_test]['timeEvent']['gameTime'] = setTimeout(gameTime, TOTAL_GAME_TIME * 1000 , roomStatus, io);
 	
 	//정전 타이머 설정
 	roomStatus[room_test]['timeEvent']['lightTime'] = new Array();
-	for( var i = 1 ; i <= 5 ; i++){
+
+	for( var i = 0 ; i < 5 ; i++){
 		roomStatus[room_test]['timeEvent']['lightTime'][i] =
 			setTimeout(lightTime, lightList[i] * 1000 , roomStatus, io);
 	}
@@ -244,7 +245,6 @@ function handReadyTime(roomStatus, room_test, io) {
 	// Recursive function 재귀 함수
 	// npc 나가는 이벤트
 	npcOutSocket(roomStatus, io);
-
 }
 
 // 게임 타이머 함수
@@ -259,9 +259,9 @@ function gameTime(roomStatus, io) {
 }
 
 function lightTime(roomStatus, io) {
-		console.log('정전 발생');
-		
-		io.to(room_test).emit('lightOut', 'lightOut'); 	
+	console.log('정전신호 보냄');
+
+	io.to(room_test).emit('lightOut', 'lightOut'); 	
 }
 
 

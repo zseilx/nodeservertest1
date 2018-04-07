@@ -125,8 +125,12 @@ io.sockets.on('connection', function (socket) {
 	// socket.on('hidingGun', function(data)
 	playGame.getDropGun(socket);
 
+	// 유저가 총을 맞았을 때
+	// socket.on('hitGun', function(data))
+	playGame.getHitGun(socket,io,roomStatus);
+
 	// 유저가 총을 쐈을 때
-	// socket.on('shootGun', function(data)
+	// socket.on('shootGun' ,function(data))
 	playGame.getShootGun(socket,io,roomStatus);
 
 	/**************************************** initGameStart ****************************************/
