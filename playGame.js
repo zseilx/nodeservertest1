@@ -121,6 +121,7 @@ function getHitGun(socket,io, roomStatus) {
 
                 // 전체 캐릭터 위치 지정
                 setPosition.setRandomPosition(roomStatus, randomPositionArrar);
+                io.to(room_test).emit('resPosition', roomStatus[room_test]['characterPosition']);
             }
         }
     });

@@ -8,63 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <!-- <script src="/socket.io/socket.io.js"></script> -->
-    <script>
-
-    var serverURL = 'http://localhost:5000'
-
-    $(document).ready(function() {
-
-        var socket = io.connect(serverURL);
-        //var socket = io.connect(serverURL2);
-        //var socket = io.connect(testURL);
-
-        socket.on('connection', 
-            function (data) { 
-                if(data.type == 'connected') {
-                    socket.emit('conneection', {
-                        type : 'join'
-                    })
-                }
-            }
-        );
-
-        socket.on('allReady', function(data) {
-            console.log('allReady gameStart');
-            socket.emit('reqPosition');
-        });
-
-        var id = 'asd';
-
-        $('#test').click(function() {
-            socket.emit('test','연결 완료!!!');
-        });
-        
-        $('#idButton').click(function() {
-            id = $('#id').val();
-        });
-        
-        $('#joinRoom').click(function() {
-            socket.emit('joinRoom', id);
-        });
-
-        $('#exitRoom').click(function() {
-            socket.emit('exitRoom', id);
-        });
-
-        $('#setReady').click(function() {
-            var obj = {
-                nick : id,
-                ready : "True"
-            };
-
-            socket.emit('checkReady', obj);
-        });
-        
-        $('#setHandReady').click(function() {
-            socket.emit('handReady', id);
-        });
-    });
-    </script>
+    <script src="./webTest.js"></script>
 
 
     <input type="text" size="10" maxlength="10" value="webTestUser" id="id">
