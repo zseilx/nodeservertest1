@@ -7,7 +7,6 @@
 const room_test = 'room1';
 
 const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
-const room_test = 'room1';
 
 // 2018_02_15
 // npc 및 player 위치 랜덤생성
