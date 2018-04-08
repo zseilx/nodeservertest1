@@ -4,7 +4,9 @@
 /******************************************************************************************************/
 const port = 5000;
 
-const app = require('express')();
+const express = require('express');
+
+const app = express();
 
 const server = require('http').createServer(app);
 

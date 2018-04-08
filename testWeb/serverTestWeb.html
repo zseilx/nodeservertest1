@@ -7,7 +7,71 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
-    <script src="./webTest.js"></script>
+    <script>
+        
+var serverURL = '39.127.7.24:5000';
+
+    $(document).ready(function() {
+
+        var socket = io.connect(serverURL);
+        //var socket = io.connect(serverURL2);
+        //var socket = io.connect(testURL);
+
+        socket.on('connection', 
+            function (data) { 
+                if(data.type == 'connected') {
+                    socket.emit('conneection', {
+                        type : 'join'
+                    })
+                }
+            }
+        );
+
+        socket.on('allReady', function(data) {
+            console.log('allReady gameStart');
+            socket.emit('reqPosition');
+        });
+
+        socket.on('', function() {
+            console.log();
+        });
+
+        var id = 'asd';
+
+        $('#test').click(function() {
+            socket.emit('test','연결 완료!!!');
+        });
+        
+        $('#idButton').click(function() {
+            id = $('#id').val();
+        });
+        
+        $('#joinRoom').click(function() {
+            socket.emit('joinRoom', id);
+        });
+
+        $('#exitRoom').click(function() {
+            socket.emit('exitRoom', id);
+        });
+
+        $('#setReady').click(function() {
+            var obj = {
+                nick : id,
+                ready : "True"
+            };
+
+            socket.emit('checkReady', obj);
+        });
+        
+        $('#setHandReady').click(function() {
+            socket.emit('handReady', id);
+        });
+
+        $('').click(function() {
+
+        });
+    });
+    </script>
 
     <input type="text" size="10" maxlength="10" value="webTestUser" id="id">
     <input type="button" value="idSet" id="idButton">
