@@ -42,6 +42,7 @@ function joinRoom(socket, roomStatus) {
 		roomList[roomname][userCnt][0].push(userId);
 		roomList[roomname][userCnt][1].push('notReady');
 		*/
+		if(typeof roomStatus[room_test]['users'] === 'undefined')
 		// 테스트용 코드 방 생성
 		if(typeof roomStatus[room_test] === 'undefined') {
 			roomStatus[room_test] = new Array();
@@ -97,7 +98,7 @@ function userReadyChk(socket, roomStatus, io) {
 					roomStatus[room_test]['users'][i][1] = 'ready';
 					// console.log('user is ready  userId = ' + jsonObj.nick);
 					// 방 내에 존재하는 사람들에게 레디 했다는 것을 전송
-					socket.broadcast.to(room_test).emit('ready', jsonObj);
+					socket.broadcast.to(room_test).emit('ready', jsonObj.nick);
 
 					// console.log('allReadyChk 전의 상황');
 					// 방 안에 존재하는 모든 사람들이 레디를 했는지 체크
@@ -153,22 +154,23 @@ function allReady(roomStatus) {
 function exitRoom(socket, roomStatus){
 	//유저id받아옴
 	socket.on('exit', function(nick) {
+		if(typeof roomStatus[room_test]['users'] !== 'undefined') {
+			var userCnt = roomStatus[room_test]['users'].length;
+			var userId  = nick;
 
-		var userCnt = roomStatus[room_test]['users'].length;
-		var userId  = nick;
+			// console.log('exit userId = ' + userId);
 
-		// console.log('exit userId = ' + userId);
-
-		for(var i=0 ; i < userCnt ; i++){
-			
-			if(roomStatus[room_test]['users'][i][0] == userId){
+			for(var i=0 ; i < userCnt ; i++){
 				
-				roomStatus[room_test]['users'].splice(i,1);
-				
-				socket.broadcast.to(room_test).emit('exitUser', userId);
+				if(roomStatus[room_test]['users'][i][0] == userId){
+					
+					roomStatus[room_test]['users'].splice(i,1);
+					
+					socket.broadcast.to(room_test).emit('exitUser', userId);
 
-				break;
-			}	
+					break;
+				}	
+			}
 		}
 	});
 }
