@@ -6,8 +6,8 @@ const setPosition = require('./setPosition');
 
 const room_test = 'room1';
 const TOTAL_GAME_TIME = 180; // 게임 총 시간
-const FRONT_SIDE_TIME = 15; // 게임 시작 대기 시간
-const BACK_SIDE_TIME = 15; // 게임 종료 전 진행을 위한 시간
+const FRONT_SIDE_TIME = 5; // 게임 시작 대기 시간
+const BACK_SIDE_TIME = 30; // 게임 종료 전 진행을 위한 시간
 const PLUS_TIME = 5; // NPC 랜덤 퇴장 + 시간 간격
 const MINUS_TIME = -5; // NPC 랜덤 퇴장 - 시간 간격
 const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
@@ -254,6 +254,8 @@ function gameTime(roomStatus, io) {
 		
 		//방 배열 삭제
 		delete roomStatus[room_test];
+		roomStatus[room_test] = new Array();
+		
 		//게임 끝 정보 서버에 전송
 		io.to(room_test).emit('timeOver', 'timeOver'); 	
 }

@@ -111,6 +111,7 @@ function getHitGun(socket,io, roomStatus) {
                 
                 //게임상태 변경
                 delete roomStatus[room_test];
+                roomStatus[room_test] = new Array();
 
                 io.to(room_test).emit('endGame', 'endGame');    
 
