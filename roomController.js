@@ -1,4 +1,5 @@
-
+// 게임 초기 설정 관련된 파일로서, 게임 엔드시 작업 처리 관련해서 불러옴
+const initGameStart = require('./initGameStart');
 
 // 방 생성 관련 테스트
 const room_test = 'room1';
@@ -42,10 +43,15 @@ function joinRoom(socket, roomStatus) {
 		roomList[roomname][userCnt][0].push(userId);
 		roomList[roomname][userCnt][1].push('notReady');
 		*/
-		if(typeof roomStatus[room_test]['users'] === 'undefined')
 		// 테스트용 코드 방 생성
 		if(typeof roomStatus[room_test] === 'undefined') {
 			roomStatus[room_test] = new Array();
+			roomStatus[room_test]['gameStatus'] = 'robie';
+		}
+		
+		if(roomStatus[room_test]['gameStatus'] != 'robie') {
+			console.log('방입장 불가(게임이 시작했거나 방이 존재하지 않음)');
+			return;
 		}
 		// 테스트용 코드
 		// 방에 입장 시 새로운 방 생성  및 유저의 정보를 방 정보에 삽입
@@ -153,7 +159,8 @@ function allReady(roomStatus) {
 // deeps level 1
 function exitRoom(socket, roomStatus){
 	//유저id받아옴
-	socket.on('exit', function(nick) {
+	socket.on('exitRoom', function(nick) {
+		console.log('게임 퇴장 함수 실행');
 		if(typeof roomStatus[room_test]['users'] !== 'undefined') {
 			var userCnt = roomStatus[room_test]['users'].length;
 			var userId  = nick;
@@ -167,10 +174,9 @@ function exitRoom(socket, roomStatus){
 					roomStatus[room_test]['users'].splice(i,1);
 					
 					socket.broadcast.to(room_test).emit('exitUser', userId);
-					
+
 					if(roomStatus[room_test]['users'].length  == 0) {
-						delete roomStatus[room_test];
-						roomStatus[room_test] = new Array();
+						initGameStart.gameEndClear(roomStatus, room_test);
 					}
 
 					break;

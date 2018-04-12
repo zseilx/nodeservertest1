@@ -20,6 +20,9 @@ server.listen(port, function() {
 // const io = require('socket.io').listen(port);
 const io = require('socket.io').listen(server);
 
+io.set('heartbeat timeout', 4000); 
+io.set('heartbeat interval', 2000);
+
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/testWeb/serverTestWeb.html');
 });
@@ -49,6 +52,9 @@ var userList = new Array();
 /*
 	roomSetting['방이름']['설정명']['설정정보']
 	방의 설정 정보 및 오브젝트 상태들을 저장 해놓는 공간
+	['설정명']
+	characterPosition, gameStatus, timeEvent, handReady, gameStartTime
+	users
 */
 var roomStatus = new Array();
 
@@ -68,14 +74,6 @@ io.sockets.on('connection', function (socket) {
 
 	console.log('connected : ' + socket.id);
 
-	socket.emit('connection', {
-		type : 'connected'
-	});
-
-	socket.on('test', function(data) {
-		console.log('web에서 온 신호 수신 완료');
-		console.log(data);
-	});
 	/**************************************** roomController ****************************************/
 	// 방 생성
 	// socket.on('createRoom', function(roomName, userId)

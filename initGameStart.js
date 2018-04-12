@@ -24,7 +24,7 @@ function sendInit(socket, roomStatus, io) {
 		roomStatus[room_test]['gameStatus'] = 'go';
 
 
-		if(roomStatus[room_test]['characterPosition'] == null) {
+		if(typeof roomStatus[room_test]['characterPosition'] === 'undefined') {
 			// console.log('sendInit : if = ' + '방생성');
 			var playerNum = roomStatus[room_test]['users'].length;
 
@@ -55,7 +55,7 @@ function handReady(socket, roomStatus, io) {
 
 		console.log('handReady!!!');
 
-		if(roomStatus[room_test]['handReady'] == null)
+		if(typeof roomStatus[room_test]['handReady'] === 'undefined')
 			roomStatus[room_test]['handReady'] = new Array();
 		
 		//손 하나를 지정위치에 올려놓은 유저의 이름 받아옴
@@ -251,10 +251,8 @@ function handReadyTime(roomStatus, room_test, io) {
 // deeps level 3
 function gameTime(roomStatus, io) {
 		console.log('게임 타임 끝');
-		
-		//방 배열 삭제
-		delete roomStatus[room_test];
-		roomStatus[room_test] = new Array();
+
+		gameEndClear(roomStatus, room_test);
 		
 		//게임 끝 정보 서버에 전송
 		io.to(room_test).emit('timeOver', 'timeOver'); 	
@@ -267,7 +265,37 @@ function lightTime(roomStatus, io) {
 }
 
 
+// 2018_04_12
+// 한 방에서의 게임 종료시 배열 정리 및 데이터 삭제
+// deeps level 2~4
+function gameEndClear(roomStatus, roomName) {
+	console.log('방 정보 초기화');
+
+    //실행중인 settimeout 모두 삭제
+    for(var key in roomStatus[roomName]['timeEvent']){
+        clearTimeout(roomStatus[roomName]['timeEvent'][key]);
+    }
+    for(var i = 0 ; i < 5 ; i++){
+        clearTimeout(roomStatus[roomName]['timeEvent']['lightTime'][i]);
+	}
+	
+	// 게임이 종료되고 로비상태로 진입 했다고 설정
+	roomStatus[room_test]['gameStatus'] = 'robie';
+	
+	delete roomStatus[roomName]['characterPosition'];
+	delete roomStatus[roomName]['handReady'];
+	delete roomStatus[roomName]['gameStartTime'];
+	
+
+	//게임상태 변경
+	/*
+    delete roomStatus[room_test];
+	roomStatus[room_test] = new Array();
+	*/
+}
+
 
 exports.sendInit = sendInit;
 exports.handReady = handReady;
 exports.handNotReady = handNotReady;
+exports.gameEndClear = gameEndClear;

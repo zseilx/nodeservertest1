@@ -9,7 +9,8 @@
 <body>
     <script>
         
-var serverURL = '39.127.7.24:5000';
+//var serverURL = '39.127.7.24:5000';
+var serverURL = 'localhost:5000'
 
     $(document).ready(function() {
 
@@ -26,17 +27,24 @@ var serverURL = '39.127.7.24:5000';
                 }
             }
         );
-
         socket.on('allReady', function(data) {
             console.log('allReady gameStart');
             socket.emit('reqPosition');
         });
-
-        socket.on('', function() {
-            console.log();
+        socket.on('handAllReady', function(data) {
+            console.log(data);
+        });
+        socket.on('resPosition', function(data) {
+            console.log('유저 캐릭터 배치도' + data);
+        });
+        socket.on('roomUser', function(data) {
+            console.log('방 안에 존재하는 유저 및 상태' + data);
+        });
+        socket.on('joinUser', function(data) {
+            console.log('유저 입장 : ' + data);
         });
 
-        var id = 'asd';
+        var id = 'webTestUser';
 
         $('#test').click(function() {
             socket.emit('test','연결 완료!!!');

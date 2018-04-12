@@ -1,3 +1,6 @@
+// 게임 초기 설정 관련된 파일로서, 게임 엔드시 작업 처리 관련해서 불러옴
+const initGameStart = require('./initGameStart');
+
 // 방 생성 관련 테스트
 const room_test = 'room1';
 
@@ -20,7 +23,7 @@ function exitServer(socket, userList) {
 // 유저의 정상적인 종료 및, 예기치 못한 종료 시 처리
 // deeps level 1
 function disconnected(socket, userList, roomStatus) {
-	socket.on('disconnect', function() {
+	socket.on('disconnect', function(socket) {
 		for(var key in userList){
 			if(userList[key] == socket.id){
                 
@@ -35,8 +38,7 @@ function disconnected(socket, userList, roomStatus) {
                         //방 배열에서 종료된 유저 삭제
                         roomStatus[room_test]['users'].splice(i,1);
                         if(roomStatus[room_test]['users'].length  == 0) {
-                            delete roomStatus[room_test];
-                            roomStatus[room_test] = new Array();
+                            initGameStart.gameEndClear(roomStatus, room_test);
                         }
                     }
                 }

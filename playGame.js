@@ -1,6 +1,8 @@
 
 // 캐릭터 랜덤 위치 생성 및 배치, 재배치 관련 함수 파일
 const setPosition = require('./setPosition');
+// 게임 초기 설정 관련된 파일로서, 게임 엔드시 작업 처리 관련해서 불러옴
+const initGameStart = require('./initGameStart');
 
 const room_test = 'room1';
 
@@ -100,18 +102,7 @@ function getHitGun(socket,io, roomStatus) {
                 //     //방 유저 상태 배열을 삭제
                 //     delete roomStatus[room_test]['users'];
                 // }
-
-                //실행중인 settimeout 모두 삭제
-                for(var key in roomStatus[room_test]['timeEvent']){
-                    clearTimeout(roomStatus[room_test]['timeEvent'][key]);
-                }
-                for(var i = 0 ; i < 5 ; i++){
-                    clearTimeout(roomStatus[room_test]['timeEvent']['lightTime'][i]);
-                }
-                
-                //게임상태 변경
-                delete roomStatus[room_test];
-                roomStatus[room_test] = new Array();
+                initGameStart.gameEndClear(roomStatus, room_test);
 
                 io.to(room_test).emit('endGame', 'endGame');    
 
@@ -127,6 +118,7 @@ function getHitGun(socket,io, roomStatus) {
         }
     });
 };
+
 
 
 // 2018_02_08 // 현재 구현 미완성 추후 문제 발생시 사용 
