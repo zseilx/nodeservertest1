@@ -37,7 +37,7 @@ const roomController = require('./roomController');
 // 게임 시작 시 초기 셋팅
 const initGameStart = require('./initGameStart');
 // 유저가 서버에 접속 및 해제했을 때의 처리
-const serverController = require('./serverController');
+// const serverController = require('./serverController'); // 현재 사용안함
 // 게임 내부에서 동작하는 이벤트들을 처리
 const playGame = require('./playGame');
 // 음성 대화 지원
@@ -46,8 +46,14 @@ const voiceTalk = require('./voiceTalk');
 
 // 접속해 있는 유저들 정보
 // 키 값으로 유저 아이디가 들어가며, 밸류값으로 소켓 아이디 저장
-// userList['유저ID'] = socket.id;
-var userList = new Array();
+// userList['userId'] = socket.id;
+// var userList = new Array();
+
+
+// 2018_04_12
+// 현재 socket 목록
+// clientList[index] = socket;
+var clientList = new Array();
 
 /*
 	roomSetting['방이름']['설정명']['설정정보']
@@ -73,6 +79,11 @@ var roomStatus = new Array();
 io.sockets.on('connection', function (socket) {
 
 	console.log('connected : ' + socket.id);
+	
+	// socket 목록 관리
+	clientList.push(socket);
+	// disconnect 이벤트 처리
+	disconnected(socket, clientList, roomStatus);
 
 	/**************************************** roomController ****************************************/
 	// 방 생성
@@ -96,18 +107,19 @@ io.sockets.on('connection', function (socket) {
 	roomController.setIndex(socket, roomStatus, io);
 
 	/**************************************** serverController ****************************************/
+	/*
 	// 유저의 서버 접속
 	// socket.on('joinServer', function()
-	serverController.joinServer(socket, userList);
+	serverController.joinServer(socket, clientList);
 
 	// 유저가 서버에서 나갔을 때 ( 정상적인 게임 종료 )
 	// socket.on("exitServer",function(userId)
-	serverController.exitServer(socket, userList);
+	serverController.exitServer(socket, clientList);
 
 	// 강제 종료 및, 예외적인 서버와의 연결 끊김 처리
 	// socket.on("exitServer",function(userId)
-	serverController.disconnected(socket, userList, roomStatus);
-
+	serverController.disconnected(socket, clientList, roomStatus);
+	*/
 	/**************************************** playGame ****************************************/
 	// 유저 움직임 수신
 	// socket.on('now', function(jsonStr)
@@ -150,3 +162,27 @@ io.sockets.on('connection', function (socket) {
 
 });
 
+
+// socket disconnect 이벤트 처리
+// deeps level 1
+function disconnected(socket, clientList, roomStatus) {
+	socket.on('disconnect', function() {
+        console.log("dixconnect : " + socket.id);
+		var i = clientList.indexOf(socket);
+		
+		if(typeof socket.gameId !== 'undefined') {
+
+			if(typeof socket.roomName !== 'undefined') {
+				for(var key in roomStatus[socket.roomName]['users']) {
+					console.log("forin : " + key);
+					if(roomStatus[socket.roomName]['users'][key][0] == socket.gameId) {
+						roomStatus[socket.roomName]['users'].splice(key, 1);
+					}
+				}
+				delete socket.roomName;
+			}
+			delete socket.gameId;
+		}
+        clientList.splice(i, 1);
+    });
+}

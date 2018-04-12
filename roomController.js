@@ -31,6 +31,20 @@ function joinRoom(socket, roomStatus) {
 	socket.on('joinRoom', function(userId) {
 		console.log('roomController.joinRoom function (joinRoom) socketEventt on'); // debug
 		
+		// 현재 소켓(클라이언트)이 접속해 있는 방이 있을 경우
+		if(typeof socket.roomName !== 'undefined') {
+			socket.emit('joinRoomError','다중 접속은 허용되지 않습니다. 기존의 방 입장 정보와 아이디를 삭제하고, 새로운 아이디로 접속합니다.');
+			console.log('socket 하나에서 다중 접속 시도');
+
+			socket.leave(socket.roomName);
+			for(var key in roomStatus[room_test]['users']) {
+				if(roomStatus[room_test]['users'][key][0] == socket.gameId) {
+					roomStatus[room_test]['users'].splice(key, 1);
+				}
+			}
+		}
+		socket.gameId = userId;
+		socket.roomName = room_test;
 		socket.join(room_test);
 		
 		// 2018_02_12
@@ -48,7 +62,7 @@ function joinRoom(socket, roomStatus) {
 			roomStatus[room_test] = new Array();
 			roomStatus[room_test]['gameStatus'] = 'robie';
 		}
-		
+
 		if(roomStatus[room_test]['gameStatus'] != 'robie') {
 			console.log('방입장 불가(게임이 시작했거나 방이 존재하지 않음)');
 			return;
@@ -183,6 +197,8 @@ function exitRoom(socket, roomStatus){
 				}	
 			}
 		}
+		delete socket.roomName;	// 게임 나갈시 소켓에 저장한 방 이름 삭제
+		delete socket.gameId;	// 현재 입장시 게임 아이디 셋팅을 하므로 지워줌 추후 로그인 추가 될 시 필요 없음
 	});
 }
 

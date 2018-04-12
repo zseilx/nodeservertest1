@@ -271,12 +271,16 @@ function lightTime(roomStatus, io) {
 function gameEndClear(roomStatus, roomName) {
 	console.log('방 정보 초기화');
 
-    //실행중인 settimeout 모두 삭제
-    for(var key in roomStatus[roomName]['timeEvent']){
-        clearTimeout(roomStatus[roomName]['timeEvent'][key]);
-    }
-    for(var i = 0 ; i < 5 ; i++){
-        clearTimeout(roomStatus[roomName]['timeEvent']['lightTime'][i]);
+	if(typeof roomStatus[roomName]['timeEvent'] !== 'undefined') {
+		//실행중인 settimeout 모두 삭제
+		for(var key in roomStatus[roomName]['timeEvent']){
+			clearTimeout(roomStatus[roomName]['timeEvent'][key]);
+		}
+		if(typeof roomStatus[roomName]['timeEvent']['lightTime'] !== 'undefined') {
+			for(var i = 0 ; i < 5 ; i++){
+				clearTimeout(roomStatus[roomName]['timeEvent']['lightTime'][i]);
+			}
+		}
 	}
 	
 	// 게임이 종료되고 로비상태로 진입 했다고 설정

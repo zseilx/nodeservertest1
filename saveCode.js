@@ -107,3 +107,35 @@ for (var i = 0; i < random.length; i++) {
 	random[i] = random[num];
 	random[num] = temp;
 }
+
+
+
+// 2018_04_12 이동
+// serverController 내부의 disconnect 소켓 내부에서 실행되던 유저가 나갈시 처리하던 부분
+for(var key in userList){
+	if(userList[key] == socket.id){
+		
+		//유저 닉네임
+		var nick = key;
+
+		var userCnt = roomStatus[room_test]['users'].length;
+
+		//접속 종료된 유저 찾는 for문
+		for (var i = 0; i < userCnt; i++) {
+			if(roomStatus[room_test]['users'][i][0] == nick){
+				//방 배열에서 종료된 유저 삭제
+				roomStatus[room_test]['users'].splice(i,1);
+				if(roomStatus[room_test]['users'].length  == 0) {
+					initGameStart.gameEndClear(roomStatus, room_test);
+				}
+			}
+		}
+		//유저 배열에서 유저 삭제
+		delete userList[key];
+		
+		//클라이언트에 종료한 유저 닉네임 전송
+		socket.broadcast.to(room_test).emit('exitUser', nick);
+
+		break;
+	}
+}
