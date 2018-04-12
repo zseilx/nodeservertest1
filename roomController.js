@@ -167,6 +167,11 @@ function exitRoom(socket, roomStatus){
 					roomStatus[room_test]['users'].splice(i,1);
 					
 					socket.broadcast.to(room_test).emit('exitUser', userId);
+					
+					if(roomStatus[room_test]['users'].length  == 0) {
+						delete roomStatus[room_test];
+						roomStatus[room_test] = new Array();
+					}
 
 					break;
 				}	

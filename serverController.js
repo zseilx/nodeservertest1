@@ -34,6 +34,10 @@ function disconnected(socket, userList, roomStatus) {
                     if(roomStatus[room_test]['users'][i][0] == nick){
                         //방 배열에서 종료된 유저 삭제
                         roomStatus[room_test]['users'].splice(i,1);
+                        if(roomStatus[room_test]['users'].length  == 0) {
+                            delete roomStatus[room_test];
+                            roomStatus[room_test] = new Array();
+                        }
                     }
                 }
                 //유저 배열에서 유저 삭제
