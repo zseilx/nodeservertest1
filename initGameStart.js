@@ -76,8 +76,6 @@ function handReady(socket, roomStatus, io) {
 
 		if(readyNum==userNum){
 			console.log('initGameStart.handReady function inGameStart 타이머 3초'); // debug
-			
-			roomStatus[room_test]['timeEvent']['handReadyTime'] = new Array();
 
 			roomStatus[room_test]['timeEvent']['handReadyTime'] =
 				setTimeout(handReadyTime, 3000 , roomStatus, room_test, io);
@@ -112,7 +110,7 @@ function handNotReady(socket, roomStatus, io){
 			roomStatus[room_test]['gameStatus'] == 'go';
 			//settimeout 정지
 			console.log('3초 세고 있는데 누가 손뺏다능!!!');
-			clearTimeout(handReadyTime);
+			clearTimeout(roomStatus[room_test]['timeEvent']['handReadyTime']);
 			
 
 			io.to(room_test).emit('handNotReady', 'handNotReady');
