@@ -75,6 +75,17 @@ var serverURL = 'localhost:5000'
             socket.emit('handReady', id);
         });
 
+        $('#webNpcOut').click(function() {
+            num = this.value;
+            console.log('퇴장 넘버'+num);
+            socket.emit('webNpcOut',num);
+        });
+
+        $('#lightOut').click(function() {
+            socket.emit('lightOut', 'lightOut'); 
+        });
+
+
         $('').click(function() {
 
         });
@@ -86,7 +97,15 @@ var serverURL = 'localhost:5000'
     <input type="button" value="joinRoom" id="joinRoom">
     <input type="button" value="exitRoom" id="exitRoom">
     <input type="button" value="setReady" id="setReady">
-    <input type="button" value="setHandReady" id="setHandReady">
+    <input type="button" value="lightOut" id="lightOut">
+    <input type="button" value="0" id="webNpcOut">
+    <input type="button" value="1" id="webNpcOut">
+    <input type="button" value="2" id="webNpcOut">
+    <input type="button" value="3" id="webNpcOut">
+    <input type="button" value="4" id="webNpcOut">
+    <input type="button" value="5" id="webNpcOut">
+    <input type="button" value="6" id="webNpcOut">
+    <input type="button" value="7" id="webNpcOut">
 
 </body>
 
