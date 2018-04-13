@@ -20,8 +20,8 @@ server.listen(port, function() {
 // const io = require('socket.io').listen(port);
 const io = require('socket.io').listen(server);
 
-io.set('heartbeat timeout', 4000); 
-io.set('heartbeat interval', 2000);
+io.set('heartbeat timeout', 5000); 
+io.set('heartbeat interval', 3000);
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/testWeb/serverTestWeb.html');
@@ -83,7 +83,7 @@ io.sockets.on('connection', function (socket) {
 	// socket 목록 관리
 	clientList.push(socket);
 	// disconnect 이벤트 처리
-	disconnected(socket, clientList, roomStatus);
+	disconnected(socket, clientList, roomStatus, io);
 
 	/**************************************** roomController ****************************************/
 	// 방 생성
@@ -165,7 +165,7 @@ io.sockets.on('connection', function (socket) {
 
 // socket disconnect 이벤트 처리
 // deeps level 1
-function disconnected(socket, clientList, roomStatus) {
+function disconnected(socket, clientList, roomStatus, io) {
 	socket.on('disconnect', function() {
         console.log("dixconnect : " + socket.id);
 		var i = clientList.indexOf(socket);
@@ -174,15 +174,17 @@ function disconnected(socket, clientList, roomStatus) {
 
 			if(typeof socket.roomName !== 'undefined') {
 				for(var key in roomStatus[socket.roomName]['users']) {
-					console.log("forin : " + key);
 					if(roomStatus[socket.roomName]['users'][key][0] == socket.gameId) {
 						roomStatus[socket.roomName]['users'].splice(key, 1);
+						console.log("playerDisconnect : " + key);
 					}
 				}
-				delete socket.roomName;
+				if(roomStatus[socket.roomName]['users'].length  <= 1) {
+					io.to(socket.roomName).emit('endGame', 'endGame');    
+					initGameStart.gameEndClear(roomStatus, socket.roomName);
+				}
 			}
-			delete socket.gameId;
 		}
-        clientList.splice(i, 1);
+		clientList.splice(i, 1);
     });
 }

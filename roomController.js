@@ -189,7 +189,8 @@ function exitRoom(socket, roomStatus){
 					
 					socket.broadcast.to(room_test).emit('exitUser', userId);
 
-					if(roomStatus[room_test]['users'].length  == 0) {
+					if(roomStatus[room_test]['users'].length  <= 1 && roomStatus[room_test]['gameStatus'] != 'robie') {
+						io.to(room_test).emit('endGame', 'endGame');    
 						initGameStart.gameEndClear(roomStatus, room_test);
 					}
 
