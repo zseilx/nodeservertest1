@@ -42,6 +42,8 @@ const initGameStart = require('./initGameStart');
 const playGame = require('./playGame');
 // 음성 대화 지원
 const voiceTalk = require('./voiceTalk');
+// 웹에서 게임을 컨트롤 하기 위한 부분
+const webTestCode = require('./webTestCode');
 
 
 // 접속해 있는 유저들 정보
@@ -159,6 +161,9 @@ io.sockets.on('connection', function (socket) {
 	initGameStart.handNotReady(socket, roomStatus, io);
 
 	// voiceTalk
+
+	// 웹에서 게임을 컨트롤 하기위한 부분
+	webTestCode.webNpcOut(socket, io);
 
 });
 
