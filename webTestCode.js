@@ -4,11 +4,19 @@ const setPosition = require('./setPosition');
 
 const room_test = 'room1';
 
-function webNpcOut(socket, io) {
-    socket.on('webNpcOut', function(num) {
-		console.log(num + " 번 웹으로 NPC 퇴장");
-		io.to(room_test).emit('npcOut', num);
+function webNpcOut(socket, roomStatus, io) {
+	
+	socket.on('webNpcOut', function(num) {
+		if(roomStatus[room_test]['characterPosition'][Num] === 'NPC') {
+			console.log(num + " 번 웹으로 NPC 퇴장");
+			roomStatus[room_test]['characterPosition'][Num] = 'empty';
+			io.to(room_test).emit('npcOut', num);
+		}
+		else {
+			console.log(num + " 번 이미 퇴장 했음(웹요청)");
+		}
 	});
+	
 };
 
 exports.webNpcOut = webNpcOut;

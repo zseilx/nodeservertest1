@@ -10,7 +10,7 @@
     <script>
         
 //var serverURL = '39.127.7.24:5000';
-var serverURL = 'localhost:5000'
+var serverURL = '39.127.7.24:5000'
 
     $(document).ready(function() {
 
@@ -74,6 +74,10 @@ var serverURL = 'localhost:5000'
         $('#setHandReady').click(function() {
             socket.emit('handReady', id);
         });
+        
+        $('#setHandNotReady').click(function() {
+            socket.emit('handNotReady', id);
+        });
 
         $('#webNpcOut').click(function() {
             num = this.value;
@@ -98,6 +102,8 @@ var serverURL = 'localhost:5000'
     <input type="button" value="exitRoom" id="exitRoom">
     <input type="button" value="setReady" id="setReady">
     <input type="button" value="lightOut" id="lightOut">
+    <input type="button" value="setHandReady" id="setHandReady">
+    <input type="button" value="setHandNotReady" id="setHandNotReady">
     <input type="button" value="0" id="webNpcOut">
     <input type="button" value="1" id="webNpcOut">
     <input type="button" value="2" id="webNpcOut">

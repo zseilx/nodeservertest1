@@ -20,8 +20,8 @@ server.listen(port, function() {
 // const io = require('socket.io').listen(port);
 const io = require('socket.io').listen(server);
 
-io.set('heartbeat timeout', 5000); 
-io.set('heartbeat interval', 3000);
+io.set('heartbeat timeout', 10000); 
+io.set('heartbeat interval', 10000);
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/testWeb/serverTestWeb.html');
@@ -163,7 +163,7 @@ io.sockets.on('connection', function (socket) {
 	// voiceTalk
 
 	// 웹에서 게임을 컨트롤 하기위한 부분
-	webTestCode.webNpcOut(socket, io);
+	webTestCode.webNpcOut(socket, roomStatus, io);
 
 });
 

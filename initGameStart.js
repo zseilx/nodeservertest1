@@ -5,9 +5,9 @@ const setPosition = require('./setPosition');
 
 
 const room_test = 'room1';
-const TOTAL_GAME_TIME = 180; // 게임 총 시간
-const FRONT_SIDE_TIME = 5; // 게임 시작 대기 시간
-const BACK_SIDE_TIME = 30; // 게임 종료 전 진행을 위한 시간
+const TOTAL_GAME_TIME = 1800; // 게임 총 시간
+const FRONT_SIDE_TIME = 50; // 게임 시작 대기 시간
+const BACK_SIDE_TIME = 300; // 게임 종료 전 진행을 위한 시간
 const PLUS_TIME = 5; // NPC 랜덤 퇴장 + 시간 간격
 const MINUS_TIME = -5; // NPC 랜덤 퇴장 - 시간 간격
 const CHAIR = 8; // 총 캐릭터 숫자 ( USER + NPC + empty포함 )
@@ -66,6 +66,10 @@ function handReady(socket, roomStatus, io) {
 		var readyNum = 0;
 
 		
+		if(roomStatus[room_test]['handReady'][userId] === 'twoIn') {
+			return;
+		}
+
 		roomStatus[room_test]['handReady'][userId] = 'twoIn';
 
 		for (const key in roomStatus[room_test]['handReady']) {
@@ -100,8 +104,9 @@ function handNotReady(socket, roomStatus, io){
 
 
 		//게임시작 타이머를 세는중에 손을 지정위치에서 뺀 경우
-		if(roomStatus[room_test]['gameStatus'] == 'handReady'){
-
+		//if(roomStatus[room_test]['gameStatus'] == 'handReady'){
+		if(typeof roomStatus[room_test]['handReady'] !== 'undefined') {
+			
 			if(roomStatus[room_test]['handReady'][userId] == 'twoIn'){
 				delete roomStatus[room_test]['handReady'][userId];
 			}
@@ -111,6 +116,7 @@ function handNotReady(socket, roomStatus, io){
 			//settimeout 정지
 			console.log('3초 세고 있는데 누가 손뺏다능!!!');
 			clearTimeout(roomStatus[room_test]['timeEvent']['handReadyTime']);
+			
 			
 
 			io.to(room_test).emit('handNotReady', 'handNotReady');
@@ -183,7 +189,6 @@ function npcOutSocket(roomStatus, io){
 		callTime += nextNpcOutTime;
 		callTime += randomTime;
 
-		roomStatus[room_test]['timeEvent']['npcOutSocket'] = new Array();
 		roomStatus[room_test]['timeEvent']['npcOutSocket'] =	setTimeout(function() {
 																	npcOutSocket(roomStatus, io)
 																}, callTime);
@@ -221,7 +226,7 @@ function handReadyTime(roomStatus, room_test, io) {
 	//정전변수
 	var lightList = new Array();
 
-	lightList[0] = Math.floor(Math.random() * (10 - 5))+5;
+	lightList[0] = Math.floor(Math.random() * (45 - 15))+15;
 	lightList[1] = Math.floor(Math.random() * (75 - 45))+45;
 	lightList[2] = Math.floor(Math.random() * (105 - 75))+75;
 	lightList[3] = Math.floor(Math.random() * (135 - 105))+105;
@@ -237,7 +242,7 @@ function handReadyTime(roomStatus, room_test, io) {
 
 	for( var i = 0 ; i < 5 ; i++){
 		roomStatus[room_test]['timeEvent']['lightTime'][i] =
-			setTimeout(lightTime, lightList[i] * 1000 , roomStatus, io);
+			setTimeout(lightTime, lightList[i] * 100000 , roomStatus, io);
 	}
 
 	// Recursive function 재귀 함수
@@ -272,6 +277,7 @@ function gameEndClear(roomStatus, roomName) {
 	if(typeof roomStatus[roomName]['timeEvent'] !== 'undefined') {
 		//실행중인 settimeout 모두 삭제
 		for(var key in roomStatus[roomName]['timeEvent']){
+			console.log('cleearTimeOut timeEvent = ' + key);
 			clearTimeout(roomStatus[roomName]['timeEvent'][key]);
 		}
 		if(typeof roomStatus[roomName]['timeEvent']['lightTime'] !== 'undefined') {
