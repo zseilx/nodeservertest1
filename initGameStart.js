@@ -242,7 +242,7 @@ function handReadyTime(roomStatus, room_test, io) {
 
 	for( var i = 0 ; i < 5 ; i++){
 		roomStatus[room_test]['timeEvent']['lightTime'][i] =
-			setTimeout(lightTime, lightList[i] * 10000 , roomStatus, io);
+			setTimeout(lightTime, lightList[i] * 100000 , roomStatus, io);
 	}
 
 	// Recursive function 재귀 함수
