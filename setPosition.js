@@ -79,11 +79,11 @@ function setRandomPosition(roomStatus, randomPosition) {
 		roomStatus[room_test]['characterPosition'][0] = 'NPC';
 		roomStatus[room_test]['characterPosition'][1] = 'NPC';
 		roomStatus[room_test]['characterPosition'][2] = 'NPC';
-		roomStatus[room_test]['characterPosition'][3] = roomStatus[room_test]['users'][0][1];
+		roomStatus[room_test]['characterPosition'][3] = roomStatus[room_test]['users'][0][0];
 		roomStatus[room_test]['characterPosition'][4] = 'NPC';
 		roomStatus[room_test]['characterPosition'][5] = 'NPC';
 		roomStatus[room_test]['characterPosition'][6] = 'NPC';
-		roomStatus[room_test]['characterPosition'][7] = roomStatus[room_test]['users'][1][1];
+		roomStatus[room_test]['characterPosition'][7] = roomStatus[room_test]['users'][1][0];
 		
 
 	// 이미 배치 된 상태를 바꾸는 형태

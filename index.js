@@ -164,6 +164,7 @@ io.sockets.on('connection', function (socket) {
 
 	// 웹에서 게임을 컨트롤 하기위한 부분
 	webTestCode.webNpcOut(socket, roomStatus, io);
+	webTestCode.webLightOut(socket, roomStatus, io);
 
 });
 

@@ -79,14 +79,17 @@ var serverURL = '39.127.7.24:5000'
             socket.emit('handNotReady', id);
         });
 
-        $('#webNpcOut').click(function() {
+        $('.webNpcOut').click(function() {
             num = this.value;
             console.log('퇴장 넘버'+num);
             socket.emit('webNpcOut',num);
         });
 
         $('#lightOut').click(function() {
-            socket.emit('lightOut', 'lightOut'); 
+            console.log('웹 정전신호');
+            //io.to('room1').emit('lightOut', 'lightOut');
+            socket.emit('webLightOut', 'webLightOut');
+
         });
 
 
@@ -104,14 +107,14 @@ var serverURL = '39.127.7.24:5000'
     <input type="button" value="lightOut" id="lightOut">
     <input type="button" value="setHandReady" id="setHandReady">
     <input type="button" value="setHandNotReady" id="setHandNotReady">
-    <input type="button" value="0" id="webNpcOut">
-    <input type="button" value="1" id="webNpcOut">
-    <input type="button" value="2" id="webNpcOut">
-    <input type="button" value="3" id="webNpcOut">
-    <input type="button" value="4" id="webNpcOut">
-    <input type="button" value="5" id="webNpcOut">
-    <input type="button" value="6" id="webNpcOut">
-    <input type="button" value="7" id="webNpcOut">
+    <input type="button" value="0" class="webNpcOut">
+    <input type="button" value="1" class="webNpcOut">
+    <input type="button" value="2" class="webNpcOut">
+    <input type="button" value="3" class="webNpcOut">
+    <input type="button" value="4" class="webNpcOut">
+    <input type="button" value="5" class="webNpcOut">
+    <input type="button" value="6" class="webNpcOut">
+    <input type="button" value="7" class="webNpcOut">
 
 </body>
 
