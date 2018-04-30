@@ -67,6 +67,11 @@ function getHitGun(socket,io, roomStatus) {
         //인게임에서 유저 수 구하기 위한 변수
         var userCnt = 0;
 
+        if(roomStatus[room_test]['gameStatus'] != 'handAllReady') {
+            console.log('총 맞음(게임 끝나있어서 적용 안함');
+            return;
+        }
+
         console.log('총 맞음');
         var dieName = roomStatus[room_test]['characterPosition'][data];
         //총에 맞은 npc또는 캐릭터 배열 비움
@@ -77,7 +82,7 @@ function getHitGun(socket,io, roomStatus) {
         //방 전체 데이터 전송
         io.to(room_test).emit('whoHit', data);
 
-        if(dieName != 'NPC') {
+        if(dieName != 'NPC' && dieName!= 'empty') {
 
             //생존 유저수 체크
             for(i = 0 ; i < 8 ; i++){

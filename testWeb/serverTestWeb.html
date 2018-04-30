@@ -12,12 +12,10 @@
 //var serverURL = '39.127.7.24:5000';
 var serverURL = 'localhost:5000'
 
-    $(document).ready(function() {
-
+     $(document).ready(function() {
         var socket = io.connect(serverURL);
         //var socket = io.connect(serverURL2);
         //var socket = io.connect(testURL);
-
         socket.on('connection', 
             function (data) { 
                 if(data.type == 'connected') {
@@ -43,9 +41,7 @@ var serverURL = 'localhost:5000'
         socket.on('joinUser', function(data) {
             console.log('유저 입장 : ' + data);
         });
-
         var id = 'webTestUser';
-
         $('#test').click(function() {
             socket.emit('test','연결 완료!!!');
         });
@@ -57,26 +53,35 @@ var serverURL = 'localhost:5000'
         $('#joinRoom').click(function() {
             socket.emit('joinRoom', id);
         });
-
         $('#exitRoom').click(function() {
             socket.emit('exitRoom', id);
         });
-
         $('#setReady').click(function() {
             var obj = {
                 nick : id,
                 ready : "True"
             };
-
             socket.emit('checkReady', obj);
         });
         
         $('#setHandReady').click(function() {
             socket.emit('handReady', id);
         });
-
+        
+        $('#setHandNotReady').click(function() {
+            socket.emit('handNotReady', id);
+        });
+        $('.webNpcOut').click(function() {
+            num = this.value;
+            console.log('퇴장 넘버'+num);
+            socket.emit('webNpcOut',num);
+        });
+        $('#lightOut').click(function() {
+            console.log('웹 정전신호');
+            //io.to('room1').emit('lightOut', 'lightOut');
+            socket.emit('webLightOut', 'webLightOut');
+        });
         $('').click(function() {
-
         });
     });
     </script>
@@ -86,7 +91,17 @@ var serverURL = 'localhost:5000'
     <input type="button" value="joinRoom" id="joinRoom">
     <input type="button" value="exitRoom" id="exitRoom">
     <input type="button" value="setReady" id="setReady">
+    <input type="button" value="lightOut" id="lightOut">
     <input type="button" value="setHandReady" id="setHandReady">
+    <input type="button" value="setHandNotReady" id="setHandNotReady">
+    <input type="button" value="0" class="webNpcOut">
+    <input type="button" value="1" class="webNpcOut">
+    <input type="button" value="2" class="webNpcOut">
+    <input type="button" value="3" class="webNpcOut">
+    <input type="button" value="4" class="webNpcOut">
+    <input type="button" value="5" class="webNpcOut">
+    <input type="button" value="6" class="webNpcOut">
+    <input type="button" value="7" class="webNpcOut">
 
 </body>
 

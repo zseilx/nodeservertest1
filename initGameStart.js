@@ -100,8 +100,9 @@ function handNotReady(socket, roomStatus, io){
 
 
 		//게임시작 타이머를 세는중에 손을 지정위치에서 뺀 경우
-		if(roomStatus[room_test]['gameStatus'] == 'handReady'){
-
+		//if(roomStatus[room_test]['gameStatus'] == 'handReady'){
+		if(typeof roomStatus[room_test]['handReady'] !== 'undefined') {
+			
 			if(roomStatus[room_test]['handReady'][userId] == 'twoIn'){
 				delete roomStatus[room_test]['handReady'][userId];
 			}
@@ -183,7 +184,6 @@ function npcOutSocket(roomStatus, io){
 		callTime += nextNpcOutTime;
 		callTime += randomTime;
 
-		roomStatus[room_test]['timeEvent']['npcOutSocket'] = new Array();
 		roomStatus[room_test]['timeEvent']['npcOutSocket'] =	setTimeout(function() {
 																	npcOutSocket(roomStatus, io)
 																}, callTime);

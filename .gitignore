@@ -65,3 +65,6 @@ typings/
 testCode/
 
 # End of https://www.gitignore.io/api/node
+
+# Custom Test WebRTC Modules
+testWebRTC/
