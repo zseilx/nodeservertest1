@@ -1,5 +1,5 @@
 // 게임 초기 설정 관련된 파일로서, 게임 엔드시 작업 처리 관련해서 불러옴
-const initGameStart = require('./initGameStart');
+const initGameStart = require('./game/initGameStart');
 
 // 방 생성 관련 테스트
 const room_test = 'room1';

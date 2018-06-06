@@ -1,4 +1,36 @@
 
+/* 제목 : webRTC 테스트용 코드들
+ * 작성자 : 정영화
+ * 작성일 : 2018_05_07
+ * 내용 : unity 게임에 음성 채팅을 구현하기 위한 예시 소스코드들로 구성
+ *       
+ */
+
+var config = require("./voicechat/config.json");
+var http = require("http");
+//var socket = require("socket.io");
+var ws = require('ws');
+var wns = require('./voicechat/WebsocketNetworkServer');
+
+
+var httpServer = null;
+if (config.httpConfig) {
+    httpServer = http.createServer();
+    httpServer.listen(
+        config.httpConfig.port 
+        ,function () { console.log('Listening on ' + httpServer.address().port); }
+    );
+}
+
+var websocketSignalingServer = new wns.WebsocketNetworkServer();
+if (httpServer) {
+    //perMessageDeflate: false needs to be set to false turning off the compression. if set to true
+    //the websocket library crashes if big messages are received (eg.128mb) no matter which payload is set!!!
+    var webSocket = new ws.Server({ server: httpServer, path: config.app.path, maxPayload: config.maxPayload, perMessageDeflate: false });
+    websocketSignalingServer.addSocketServer(webSocket, config.app);
+}
+
+
 /******************************************************************************************************/
 /****************************************** External Module *******************************************/
 /******************************************************************************************************/
@@ -33,20 +65,18 @@ app.get('/', function(req, res){
 /******************************************************************************************************/
 
 // DB 커넥션 및 익스큐트 전부 포함
-const conn = require('./DBConnection');
+const conn = require('./db/DBConnection');
 
 // 방 관리의 주요 기능들을 모아놓은 것
-const roomController = require('./roomController');
+const roomController = require('./game/roomController');
 // 게임 시작 시 초기 셋팅
-const initGameStart = require('./initGameStart');
+const initGameStart = require('./game/initGameStart');
 // 유저가 서버에 접속 및 해제했을 때의 처리
 // const serverController = require('./serverController'); // 현재 사용안함
 // 게임 내부에서 동작하는 이벤트들을 처리
-const playGame = require('./playGame');
-// 음성 대화 지원
-const voiceTalk = require('./voiceTalk');
+const playGame = require('./game/playGame');
 // 로비 부분
-const lobbyController = require('./lobbyController');
+const lobbyController = require('./game/lobbyController');
 
 // 접속해 있는 유저들 정보
 // 키 값으로 유저 아이디가 들어가며, 밸류값으로 소켓 아이디 저장

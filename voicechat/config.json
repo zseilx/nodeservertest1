@@ -1,0 +1,13 @@
+{
+    "httpConfig":
+    {
+        "port": 12776
+    },
+    "maxPayload": 
+        1048576,
+    "app":
+    {
+        "name": "VoiceChatApp",
+        "path": "/voicechatapp"
+    }
+}
