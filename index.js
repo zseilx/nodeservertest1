@@ -45,7 +45,8 @@ const initGameStart = require('./initGameStart');
 const playGame = require('./playGame');
 // 음성 대화 지원
 const voiceTalk = require('./voiceTalk');
-
+// 로비 부분
+const lobbyController = require('./lobbyController');
 
 // 접속해 있는 유저들 정보
 // 키 값으로 유저 아이디가 들어가며, 밸류값으로 소켓 아이디 저장
@@ -67,7 +68,7 @@ var clientList = new Array();
 */
 var roomStatus = new Array();
 
-
+var lobbyStatus = new Array();
 /******************************************************************************************************/
 /*******************************************     Cycle     ********************************************/
 /******************************************************************************************************/
@@ -105,10 +106,7 @@ io.sockets.on('connection', function (socket) {
 	// socket.on('checkReady', function(jsonObj)
 	roomController.userReadyChk(socket, roomStatus);
 
-	// 씬 전환 정보 전송
-	// socket.on('index', function(index)
-	roomController.setIndex(socket, roomStatus, io);
-
+	
 	/**************************************** serverController ****************************************/
 	/*
 	// 유저의 서버 접속
@@ -161,8 +159,20 @@ io.sockets.on('connection', function (socket) {
 	// socket.on('handNotReady', function(data)
 	initGameStart.handNotReady(socket, roomStatus, io);
 
-	// voiceTalk
+	/*************************************** lobbyController ***************************************/
 
+	//유저가 로비에 입장 했을 때
+	lobbyController.joinLobby(socket, lobbyStatus, io);
+	//유저가 로비에서 퇴장 했을 때
+	lobbyController.exitLobby(socket, lobbyStatus, io);
+	//유저가 텔레포트를 사용 했을 때
+	lobbyController.teleport(socket, lobbyStatus, io);
+	//씬 전환 시
+	lobbyController.setIndex(socket);
+	//로비에서 낚시를 시작 할 때
+	lobbyController.fishing(socket, lobbyStatus, io);
+	//낚시 도중 낚시장을 빠져나갔을 때
+	lobbyController.stopFishing(socket, lobbyStatus, io);
 });
 
 

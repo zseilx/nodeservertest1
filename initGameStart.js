@@ -296,8 +296,15 @@ function gameEndClear(roomStatus, roomName) {
 	*/
 }
 
+function lobbyEndClear(lobbyStatus, lobby_test) {
+	console.log('로비 정보 초기화');
+
+	lobbyStatus[lobby_test]['gameStatus'] = 'endRobie';
+}
+
 
 exports.sendInit = sendInit;
 exports.handReady = handReady;
 exports.handNotReady = handNotReady;
 exports.gameEndClear = gameEndClear;
+exports.lobbyEndClear = lobbyEndClear;
